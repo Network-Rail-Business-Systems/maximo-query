@@ -14,7 +14,7 @@ class MaximoQueryServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../config/config.php' => config_path('maximo-query.php'),
+                __DIR__ . '/../../config/config.php' => config_path('maximo-query.php'),
             ], 'config');
         }
     }
