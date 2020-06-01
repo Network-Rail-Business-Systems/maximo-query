@@ -1,0 +1,59 @@
+{
+    "name": "nrbusinesssystems/maximo-query",
+    "description": "Easily retrieve data from Maximo using the REST API",
+    "keywords": [
+        "nrbusinesssystems",
+        "maximo-query"
+    ],
+    "homepage": "https://github.com/nrbusinesssystems/maximo-query",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Christopher Abey",
+            "email": "christopher.abey@networkrail.co.uk",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.4",
+        "guzzlehttp/guzzle": "^6.5",
+        "illuminate/support": "^7.12",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Nrbusinesssystems\\MaximoQuery\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Nrbusinesssystems\\MaximoQuery\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Nrbusinesssystems\\MaximoQuery\\Providers\\MaximoQueryServiceProvider"
+            ],
+            "aliases": {
+                "MaximoQuery": "Nrbusinesssystems\\MaximoQuery\\Facades\\MaximoQuery"
+            }
+        }
+    },
+    "require-dev": {
+        "nunomaduro/collision": "^5.0",
+        "orchestra/testbench": "^5.2",
+        "pestphp/pest": "^0.1.5",
+        "phpunit/phpunit": "^9.0"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
