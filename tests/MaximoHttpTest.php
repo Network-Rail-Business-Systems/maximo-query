@@ -14,11 +14,13 @@ use Nrbusinesssystems\MaximoQuery\MaximoResponse;
 
 beforeEach(function () {
     $this->httpCacheKey = config('maximo-query.cookie_cache_key');
+
+    $this->fakeLogin();
 });
 
 
 it('authenticates if cookies are not cached', function() {
-    Cache::flush();
+    $this->clearCookies();
 
     Http::fake();
 
@@ -41,7 +43,7 @@ it('throws an exception if username or password are not set in the config', func
 
     Config::set('maximo-query.maximo_username', null);
 
-    Cache::flush();
+    $this->clearCookies();
 
     MaximoQuery::withObjectStructure('mxperson')
         ->get();
@@ -56,7 +58,7 @@ it('throws an exception if it cannot authenticate', function () {
         '*/j_security_check' => Http::response(null, 401),
     ]);
 
-    Cache::flush();
+    $this->clearCookies();
 
     MaximoQuery::withObjectStructure('mxperson')
         ->get();
@@ -65,8 +67,6 @@ it('throws an exception if it cannot authenticate', function () {
 
 
 it('does not authenticate if cookies are cached', function() {
-    Cache::put($this->httpCacheKey, new CookieJar());
-
     Http::fake();
 
     MaximoQuery::withObjectStructure('mxperson')
@@ -106,7 +106,7 @@ it('returns an instance of the maximo response class', function () {
 test('cookies are only stored in the cache for the duration of the cache lifetime', function () {
     Config::set('maximo-query.cache_ttl_minutes', 60);
 
-    Cache::flush();
+    $this->clearCookies();
 
     Http::fake();
 

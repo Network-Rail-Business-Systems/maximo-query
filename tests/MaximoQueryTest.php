@@ -1,8 +1,13 @@
 <?php
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidQuery;
 use Nrbusinesssystems\MaximoQuery\Facades\MaximoQuery;
+
+afterEach(function () {
+    Cache::forget(config('maximo-query.cookie_cache_key'));
+});
 
 
 it('throws an exception if object type is not set', function() {
@@ -105,7 +110,7 @@ test('collection count can be enabled', function() {
         ->withCount()
         ->getUrl();
 
-    assertStringContainsString('_collectioncount=1', $url);
+    assertStringContainsString('collectioncount=1', $url);
 });
 
 
@@ -265,6 +270,8 @@ it('can add where not null clause to query', function() {
 
 
 test('count method returns an integer', function() {
+    $this->fakeLogin();
+
     Http::fake([
         '*/oslc/os/mxperson?count=1' => Http::response(["totalCount" => 2345]),
     ]);
@@ -289,6 +296,8 @@ test('where methods can be chained', function() {
 
 
 test('the find method returns a single record as an array', function() {
+    $this->fakeLogin();
+
     Http::fake([
         '*/oslc/os/mxperson/1191' => Http::response(require __DIR__ . '/stubs/responses/single-record.php'),
     ]);

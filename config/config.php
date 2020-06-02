@@ -5,9 +5,9 @@ return [
 
     'cookie_cache_key' => 'maximo-query:cookies',
 
-    'maximo_username' => '',
+    'maximo_username' => 'username',
 
-    'maximo_password' => '',
+    'maximo_password' => 'password',
 
     'cache_ttl_minutes' => 60
 ];

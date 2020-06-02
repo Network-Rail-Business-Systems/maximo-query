@@ -16,8 +16,6 @@ class MaximoQuery
 
     private ?string $queryObject = null;
 
-    private ?string $queryUrl = null;
-
     private ?int $uniqueId = null;
 
     private ?int $pageSize = 1000;
@@ -232,7 +230,7 @@ class MaximoQuery
      */
     public function getUrl(): string
     {
-        return $this->queryUrl ?? $this->buildUrl();
+        return $this->buildUrl();
     }
 
 
@@ -288,9 +286,7 @@ class MaximoQuery
             ->filter()
             ->implode('&');
 
-        $this->queryUrl = "{$baseurl}/oslc/{$this->objectType}/{$this->queryObject}{$this->getUniqueId()}?{$params}";
-
-        return $this->queryUrl;
+        return "{$baseurl}/oslc/{$this->objectType}/{$this->queryObject}{$this->getUniqueId()}?{$params}";
     }
 
 
@@ -376,7 +372,7 @@ class MaximoQuery
             return;
         }
 
-        return "_collectioncount=1";
+        return "collectioncount=1";
     }
 
 

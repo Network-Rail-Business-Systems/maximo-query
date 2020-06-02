@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\Http;
 use Nrbusinesssystems\MaximoQuery\Exceptions\KeyNotFound;
 use Nrbusinesssystems\MaximoQuery\Facades\MaximoQuery;
 
+beforeEach(function () {
+    $this->fakeLogin();
+});
+
 test('filter method finds the specified key in response and returns it', function () {
     Http::fake([
         '*/oslc/os/mxperson?oslc.select=*&oslc.pageSize=5&_dropnulls=0' => Http::response(require __DIR__ . '/stubs/responses/multi-records.php'),
