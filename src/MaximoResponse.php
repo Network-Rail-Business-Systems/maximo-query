@@ -43,14 +43,14 @@ class MaximoResponse
     /**
      * Gets the total count from the response array
      *
-     * @return int|null
+     * @return int
      */
-    public function getCount(): ?int
+    public function getCount(): int
     {
         try {
             return $this->filter('totalCount', false);
         } catch (KeyNotFound $e) {
-            return null;
+            return 0;
         }
     }
 
@@ -114,7 +114,12 @@ class MaximoResponse
     }
 
 
-    public function getUrl()
+    /**
+     * Returns the query URL
+     *
+     * @return string
+     */
+    public function getUrl(): string
     {
         return $this->queryUrl;
     }

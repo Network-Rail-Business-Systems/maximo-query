@@ -237,6 +237,13 @@ or an `Illuminate\Support\Collection`
 $collection = $response->toCollection();
 ```
 
+To retrieve the query URL directly from the response object
+
+```
+$url = $response->getUrl();
+```
+
+
 You can search the response recursively for a key and have it return the corresponding value:
 
 ```
@@ -256,6 +263,8 @@ If you requested that the record count be returned with the response payload, yo
 ```
 $count = $response->getCount();
 ```
+
+If you call this method without having called the `withCount()` method on the query, a count of `0` will be returned.
 
 To retrieving the next or previous page of a paginated response can be done like so:
 
