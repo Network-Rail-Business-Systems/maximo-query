@@ -44,11 +44,14 @@ class MaximoResponse
      * Gets the total count from the response array
      *
      * @return int|null
-     * @throws KeyNotFound
      */
     public function getCount(): ?int
     {
-        return $this->filter('totalCount', false);
+        try {
+            return $this->filter('totalCount', false);
+        } catch (KeyNotFound $e) {
+            return null;
+        }
     }
 
 
