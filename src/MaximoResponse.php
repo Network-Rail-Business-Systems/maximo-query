@@ -4,17 +4,20 @@ namespace Nrbusinesssystems\MaximoQuery;
 
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Nrbusinesssystems\MaximoQuery\Exceptions\KeyNotFound;
 
 class MaximoResponse
 {
     private string $rawResponse;
 
+    private string $queryUrl;
 
-    public function __construct(string $response)
+
+    public function __construct(string $response, string $url)
     {
         $this->rawResponse = $response;
+
+        $this->queryUrl = $url;
     }
 
 
@@ -105,6 +108,12 @@ class MaximoResponse
     public function prevPage()
     {
         return $this->getPage('previousPage');
+    }
+
+
+    public function getUrl()
+    {
+        return $this->queryUrl;
     }
 
 

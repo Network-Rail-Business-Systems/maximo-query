@@ -99,7 +99,7 @@ class MaximoHttp
     {
         $response = $this->getResponse();
 
-        return new MaximoResponse($response);
+        return new MaximoResponse($response, $this->url);
     }
 
 }
