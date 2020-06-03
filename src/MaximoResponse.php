@@ -48,7 +48,7 @@ class MaximoResponse
     public function getCount(): int
     {
         try {
-            return $this->filter('totalCount', false);
+            return $this->filter('oslc:totalCount', false);
         } catch (KeyNotFound $e) {
             return 0;
         }
