@@ -28,8 +28,6 @@ Publish the config file and configure the `maximo_url`, `maximo_username` and `m
 php artisan vendor:publish --provider="Nrbusinesssystems\MaximoQuery\Providers\MaximoQueryServiceProvider" --tag="config"
 ```
 
-<br/>
-
 ## Usage
 
 ### Query Builder
@@ -45,35 +43,32 @@ or by creating a new instance of the `MaximoQuery` class
 ```
 $query = (new MaximoQuery)->withObjectStructure('mxperson');
 ```
-<br/>
 
 #### Query Object
 
-You must define a Maximo data object to query against by using the `withObjectStructure` method which takes the name of the object structure as it's only parameter.
+You must define a Maximo data object to query against by using the `withObjectStructure` method which takes the name of the object structure as its only parameter.
 
 Not defining the data object will result in an exception being thrown.
-
-<br/>
 
 #### Selecting Columns
 
 By default, the query will not select anything and the request will just return the resource links for the individual records.
 
-You can select data using the select method and passing in the columns requested.
+You can select data using the select method and passing in the columns requested:
 
 ```
 $query = MaximoQuery::withObjectStructure('mxperson')
     ->select('displayname');
 ```
 
-Or an array of columns
+Or an array of columns:
 
 ```
 $query = MaximoQuery::withObjectStructure('mxperson')
     ->select(['personuid', 'displayname']);
 ```
 
-You can also select all the column available on the given object using
+You can also select all the column available on the given object using:
 
 ```
 $query = MaximoQuery::withObjectStructure('mxperson')
@@ -82,8 +77,6 @@ $query = MaximoQuery::withObjectStructure('mxperson')
 
 This should be used with **caution** as many objects in Maximo have a **LOT** of columns!
 It is far better to specify exactly what columns are required in order to reduce the response payload.
-
-<br/>
 
 #### Where Clauses
 
@@ -118,8 +111,6 @@ whereNotNull('some_nullable_column')
 
 ```
 
-<br />
-
 #### Ordering
 
 You can request that the returned data is ordered using the `orderBy` method which accepts the column name and the direction to sort by `desc / asc`
@@ -138,8 +129,6 @@ orderBy(
     ]
 )
 ```
-
-<br />
 
 #### Paging
 
@@ -161,8 +150,6 @@ $query = MaximoQuery::withObjectStructure('mxperson')
 
 Be **VERY** careful when disabling pagination and ensure that your query has been sufficiently filtered down or you could end up with a very **LARGE** response payload!
 
-<br />
-
 #### Record Count
 
 If you only want to retrieve the number of records for your given query you can use the `count()` method. This will immediately execute your request and return the record count.
@@ -183,27 +170,19 @@ MaximoQuery::withObjectStructure('mxperson')
     ->get();
 ``` 
 
-<br />
-
 #### Null Values
 
 By default, all requested columns are returned regardless of their values. If you wish to reduce the response payload, you may request that `null` values are not included in the response by using the `filterNullValues()` method.
 
-<br />
-
 #### Retrieving A Specific Record
 
 Like Eloquent, you can use the `find()` method to retrieve a single resource by passing in the unique ID. This will immediately send the request and, if found, return the requested resource as an array of `attribute => value` pairs.
-
-<br/>
 
 #### Executing The Query
 
 Almost all the methods return the current instance and as such can be chained to your heart's content.
 
 Once you are finished building the query, simply calling `get()` will execute the query and return  an instance of the `MaximoResponse` class.
-
-<br />
 
 #### Authentication
 
@@ -212,8 +191,6 @@ Upon executing the query, the package make an initial request to authenticate us
 The cookies returned are then sent as part of the main request payload.
 
 The authentication cookies are stored in the cache for the configured cache lifetime specified in the `cache_ttl_minutes` config variable thus removing the need to authenticate for subsequent requests.
-
-<br />
 
 ### MaximoResponse Object
 
@@ -275,8 +252,6 @@ $pageThree = $pageTwo->nextPage();
 ```
 
 Calling either of these methods makes another http request and returns a new instance of the `MaximoResponse` object.
-
-<br/>
 
 ### Testing
 
