@@ -134,14 +134,22 @@ orderBy(
 
 Because of the potential to request a large amount of data, the query builder has a default of `1000` resource items per page.
 
-This can be overridden using the `paginate()` method.
+This can be overridden using the `paginate()` method:
 
 ```
 $query = MaximoQuery::withObjectStructure('mxperson')
     ->paginate(20);
 ```
 
-If you wish to disable pagination completely,
+To retrieve a specific page, pass the page number to the `get()` method:
+
+```
+$query = MaximoQuery::withObjectStructure('mxperson')
+    ->paginate(20)
+    ->get(2);
+```
+
+If you wish to disable pagination completely use the `withoutPagination()` method:
  
 ```
 $query = MaximoQuery::withObjectStructure('mxperson')
