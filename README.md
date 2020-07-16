@@ -263,6 +263,13 @@ Calling either of these methods makes another http request and returns a new ins
 
 ### Testing
 
+WHen utilsing MaximoQuery in your tests you can apply your expectations directly to the class instead of making your own mocks:
+
+```
+MaximoQuery::shouldReceive('withObjectStructure')
+    -> andThrow(new InvalidResponse());
+```
+
 ``` bash
 composer test
 ```
