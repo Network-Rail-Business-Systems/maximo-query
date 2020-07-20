@@ -9,7 +9,7 @@ Add the following to your `composer.json` file:
 ```
 "require": {
     ...
-    "nrbusinesssystems/maximo-query": "master"
+    "nrbusinesssystems/maximo-query": "^0.3"
 },
 "repositories": [
     ...
