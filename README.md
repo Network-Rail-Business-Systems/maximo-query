@@ -200,6 +200,8 @@ The cookies returned are then sent as part of the main request payload.
 
 The authentication cookies are stored in the cache for the configured cache lifetime specified in the `cache_ttl_minutes` config variable thus removing the need to authenticate for subsequent requests.
 
+If you are running multiple sites from the same domain (e.g. https://system/one and https://system/two) each will require its own cookie key to avoid cross-site interference. This can be set in the config or the system `.env` using the `MAXIMO_KEY` setting.
+
 ### MaximoResponse Object
 
 All successful responses return a `MaximoResponse` object. The response object is immutable so all the methods below can be called without affecting the original object. 
