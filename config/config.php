@@ -1,13 +1,13 @@
 <?php
 
 return [
-    'maximo_url' => 'http://localhost',
+    'maximo_url' => env('MAXIMO_URL', 'http://localhost'),
 
-    'cookie_cache_key' => 'maximo-query:cookies',
+    'cookie_cache_key' => env('MAXIMO_KEY', 'maximo-query:cookies'),
 
-    'maximo_username' => 'username',
+    'maximo_username' => env('MAXIMO_USERNAME', 'username'),
 
-    'maximo_password' => 'password',
+    'maximo_password' => env('MAXIMO_PASSWORD', 'password'),
 
-    'cache_ttl_minutes' => 60
+    'cache_ttl_minutes' => env('MAXIMO_TTL', 60)
 ];

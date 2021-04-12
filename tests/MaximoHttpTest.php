@@ -31,7 +31,7 @@ it('authenticates if cookies are not cached', function() {
         return Str::contains($request->url(), 'j_security_check');
     });
 
-    assertInstanceOf(CookieJar::class, Cache::get($this->httpCacheKey));
+    $this->assertInstanceOf(CookieJar::class, Cache::get($this->httpCacheKey));
 });
 
 
@@ -98,7 +98,7 @@ it('returns an instance of the maximo response class', function () {
     $response = MaximoQuery::withObjectStructure('mxperson')
         ->get();
 
-    assertInstanceOf(MaximoResponse::class, $response);
+    $this->assertInstanceOf(MaximoResponse::class, $response);
 });
 
 
@@ -113,9 +113,9 @@ test('cookies are only stored in the cache for the duration of the cache lifetim
     MaximoQuery::withObjectStructure('mxperson')
         ->get();
 
-    assertTrue(Cache::has($this->httpCacheKey));
+    $this->assertTrue(Cache::has($this->httpCacheKey));
 
     Carbon::setTestNow(Carbon::now()->addMinutes(61));
 
-    assertFalse(Cache::has($this->httpCacheKey));
+    $this->assertFalse(Cache::has($this->httpCacheKey));
 });

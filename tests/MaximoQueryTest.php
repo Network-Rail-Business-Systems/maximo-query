@@ -22,9 +22,9 @@ test('withObjectStructure method returns the correct query string', function() {
     $url = MaximoQuery::withObjectStructure('mxperson')
         ->getUrl();
 
-    assertIsString($url);
+    $this->assertIsString($url);
 
-    assertStringContainsString('os/mxperson', $url);
+    $this->assertStringContainsString('os/mxperson', $url);
 });
 
 
@@ -33,7 +33,7 @@ test('withBusinessObject method returns the correct query string', function() {
     $url = MaximoQuery::withBusinessObject('person')
         ->getUrl();
 
-    assertStringContainsString('mbo/person', $url);
+    $this->assertStringContainsString('mbo/person', $url);
 });
 
 
@@ -42,7 +42,7 @@ it('selects no columns by default', function() {
     $url = MaximoQuery::withObjectStructure('mxperson')
         ->getUrl();
 
-    assertStringNotContainsString('oslc.select', $url);
+    $this->assertStringNotContainsString('oslc.select', $url);
 });
 
 
@@ -52,7 +52,7 @@ test('selectAll method returns the correct query string', function() {
         ->selectAll()
         ->getUrl();
 
-    assertStringContainsString('oslc.select=*', $url);
+    $this->assertStringContainsString('oslc.select=*', $url);
 });
 
 
@@ -62,7 +62,7 @@ test('specific columns can be requested', function() {
         ->select(['column1', 'column2', 'column3'])
         ->getUrl();
 
-    assertStringContainsString('oslc.select=column1,column2,column3', $url);
+    $this->assertStringContainsString('oslc.select=column1,column2,column3', $url);
 });
 
 
@@ -71,7 +71,7 @@ it('has a default pagination', function() {
     $url = MaximoQuery::withObjectStructure('mxperson')
         ->getUrl();
 
-    assertStringContainsString('oslc.pageSize=1000', $url);
+    $this->assertStringContainsString('oslc.pageSize=1000', $url);
 });
 
 
@@ -81,7 +81,7 @@ test('pagination can be set to a specific value', function() {
         ->paginate(100)
         ->getUrl();
 
-    assertStringContainsString('oslc.pageSize=100', $url);
+    $this->assertStringContainsString('oslc.pageSize=100', $url);
 });
 
 
@@ -91,7 +91,7 @@ test('pagination can be disabled', function() {
         ->withoutPagination()
         ->getUrl();
 
-    assertStringNotContainsString('oslc.pageSize', $url);
+    $this->assertStringNotContainsString('oslc.pageSize', $url);
 });
 
 
@@ -100,7 +100,7 @@ it('will not request collection count by default', function() {
     $url = MaximoQuery::withObjectStructure('mxperson')
         ->getUrl();
 
-    assertStringNotContainsString('_collectioncount', $url);
+    $this->assertStringNotContainsString('_collectioncount', $url);
 });
 
 
@@ -110,7 +110,7 @@ test('collection count can be enabled', function() {
         ->withCount()
         ->getUrl();
 
-    assertStringContainsString('collectioncount=1', $url);
+    $this->assertStringContainsString('collectioncount=1', $url);
 });
 
 
@@ -119,7 +119,7 @@ it('does not drop null values by default', function() {
     $url = MaximoQuery::withObjectStructure('mxperson')
         ->getUrl();
 
-    assertStringContainsString('_dropnulls=0', $url);
+    $this->assertStringContainsString('_dropnulls=0', $url);
 });
 
 
@@ -129,7 +129,7 @@ it('can request the response to not return null values', function() {
         ->filterNullValues()
         ->getUrl();
 
-    assertStringContainsString('_dropnulls=1', $url);
+    $this->assertStringContainsString('_dropnulls=1', $url);
 });
 
 
@@ -139,7 +139,7 @@ it('can order by a single column', function() {
         ->orderBy('column1', 'desc')
         ->getUrl();
 
-    assertStringContainsString('oslc.orderBy=-column1', $url);
+    $this->assertStringContainsString('oslc.orderBy=-column1', $url);
 });
 
 
@@ -152,7 +152,7 @@ it('can order by a multiple columns', function() {
         ])
         ->getUrl();
 
-    assertStringContainsString('oslc.orderBy=-column1,+column2', $url);
+    $this->assertStringContainsString('oslc.orderBy=-column1,+column2', $url);
 });
 
 
@@ -167,7 +167,7 @@ test('passing an invalid operator to where throws an exception', function(string
         ->where('column1', $operator, 'some value')
         ->getUrl();
 
-    assertStringContainsString("oslc.where=column1{$operator}\"some value\"", $url);
+    $this->assertStringContainsString("oslc.where=column1{$operator}\"some value\"", $url);
 })->with([
     ['=', false],
     ['>=', false],
@@ -185,7 +185,7 @@ test('where method defaults to equals if no operator is passed', function() {
         ->where('column1', 'some value')
         ->getUrl();
 
-    assertStringContainsString('oslc.where=column1="some value"', $url);
+    $this->assertStringContainsString('oslc.where=column1="some value"', $url);
 });
 
 
@@ -195,7 +195,7 @@ test('numeric values passed to where method are not quoted', function() {
         ->where('column1', 100)
         ->getUrl();
 
-    assertStringContainsString('oslc.where=column1=100', $url);
+    $this->assertStringContainsString('oslc.where=column1=100', $url);
 });
 
 
@@ -205,7 +205,7 @@ it('can add where in clause to query', function() {
         ->whereIn('column1', ['tom', 'dick', 'harry'])
         ->getUrl();
 
-    assertStringContainsString('oslc.where=column1 in ["tom","dick","harry"]', $url);
+    $this->assertStringContainsString('oslc.where=column1 in ["tom","dick","harry"]', $url);
 });
 
 
@@ -215,7 +215,7 @@ it('can add where not in clause to query', function() {
         ->whereNotIn('column1', ['tom', 'dick', 'harry'])
         ->getUrl();
 
-    assertStringContainsString('oslc.where=column1!="[tom,dick,harry]"', $url);
+    $this->assertStringContainsString('oslc.where=column1!="[tom,dick,harry]"', $url);
 });
 
 
@@ -224,7 +224,7 @@ it('can add where starts with clause to query', function() {
         ->whereStartsWith('column1', 'some value')
         ->getUrl();
 
-    assertStringContainsString('oslc.where=column1="some value%"', $url);
+    $this->assertStringContainsString('oslc.where=column1="some value%"', $url);
 });
 
 
@@ -234,7 +234,7 @@ it('can add where ends with clause to query', function() {
         ->whereEndsWith('column1', 'some value')
         ->getUrl();
 
-    assertStringContainsString('oslc.where=column1="%some value"', $url);
+    $this->assertStringContainsString('oslc.where=column1="%some value"', $url);
 });
 
 
@@ -244,7 +244,7 @@ it('can add where like clause to query', function() {
         ->whereLike('column1', 'some value')
         ->getUrl();
 
-    assertStringContainsString('oslc.where=column1="%some value%"', $url);
+    $this->assertStringContainsString('oslc.where=column1="%some value%"', $url);
 });
 
 
@@ -254,7 +254,7 @@ it('can add where null clause to query', function() {
         ->whereNull('column1')
         ->getUrl();
 
-    assertStringContainsString('oslc.where=column1!="*"', $url);
+    $this->assertStringContainsString('oslc.where=column1!="*"', $url);
 });
 
 
@@ -264,7 +264,7 @@ it('can add where not null clause to query', function() {
         ->whereNotNull('column1')
         ->getUrl();
 
-    assertStringContainsString('oslc.where=column1="*"', $url);
+    $this->assertStringContainsString('oslc.where=column1="*"', $url);
 });
 
 
@@ -279,7 +279,7 @@ test('count method returns an integer', function() {
     $count = MaximoQuery::withObjectStructure('mxperson')
         ->count();
 
-    assertIsInt($count);
+    $this->assertIsInt($count);
 });
 
 
@@ -290,7 +290,7 @@ test('where methods can be chained', function() {
         ->where('column2', 'another value')
         ->getUrl();
 
-    assertStringContainsString('oslc.where=column1="some value" and column2="another value"', $url);
+    $this->assertStringContainsString('oslc.where=column1="some value" and column2="another value"', $url);
 });
 
 
@@ -305,7 +305,7 @@ test('the find method returns a single record as an array', function() {
     $response = MaximoQuery::withObjectStructure('mxperson')
         ->find(1191);
 
-    assertIsArray($response);
+    $this->assertIsArray($response);
 
-    assertArrayHasKey('spi:personuid', $response);
+    $this->assertArrayHasKey('spi:personuid', $response);
 });

@@ -9,7 +9,7 @@ Add the following to your `composer.json` file:
 ```
 "require": {
     ...
-    "nrbusinesssystems/maximo-query": "master"
+    "nrbusinesssystems/maximo-query": "^0.3"
 },
 "repositories": [
     ...
@@ -28,8 +28,6 @@ Publish the config file and configure the `maximo_url`, `maximo_username` and `m
 php artisan vendor:publish --provider="Nrbusinesssystems\MaximoQuery\Providers\MaximoQueryServiceProvider" --tag="config"
 ```
 
-<br/>
-
 ## Usage
 
 ### Query Builder
@@ -45,35 +43,32 @@ or by creating a new instance of the `MaximoQuery` class
 ```
 $query = (new MaximoQuery)->withObjectStructure('mxperson');
 ```
-<br/>
 
 #### Query Object
 
-You must define a Maximo data object to query against by using the `withObjectStructure` method which takes the name of the object structure as it's only parameter.
+You must define a Maximo data object to query against by using the `withObjectStructure` method which takes the name of the object structure as its only parameter.
 
 Not defining the data object will result in an exception being thrown.
-
-<br/>
 
 #### Selecting Columns
 
 By default, the query will not select anything and the request will just return the resource links for the individual records.
 
-You can select data using the select method and passing in the columns requested.
+You can select data using the select method and passing in the columns requested:
 
 ```
 $query = MaximoQuery::withObjectStructure('mxperson')
     ->select('displayname');
 ```
 
-Or an array of columns
+Or an array of columns:
 
 ```
 $query = MaximoQuery::withObjectStructure('mxperson')
     ->select(['personuid', 'displayname']);
 ```
 
-You can also select all the column available on the given object using
+You can also select all the column available on the given object using:
 
 ```
 $query = MaximoQuery::withObjectStructure('mxperson')
@@ -82,8 +77,6 @@ $query = MaximoQuery::withObjectStructure('mxperson')
 
 This should be used with **caution** as many objects in Maximo have a **LOT** of columns!
 It is far better to specify exactly what columns are required in order to reduce the response payload.
-
-<br/>
 
 #### Where Clauses
 
@@ -118,8 +111,6 @@ whereNotNull('some_nullable_column')
 
 ```
 
-<br />
-
 #### Ordering
 
 You can request that the returned data is ordered using the `orderBy` method which accepts the column name and the direction to sort by `desc / asc`
@@ -139,20 +130,26 @@ orderBy(
 )
 ```
 
-<br />
-
 #### Paging
 
 Because of the potential to request a large amount of data, the query builder has a default of `1000` resource items per page.
 
-This can be overridden using the `paginate()` method.
+This can be overridden using the `paginate()` method:
 
 ```
 $query = MaximoQuery::withObjectStructure('mxperson')
     ->paginate(20);
 ```
 
-If you wish to disable pagination completely,
+To retrieve a specific page, pass the page number to the `get()` method:
+
+```
+$query = MaximoQuery::withObjectStructure('mxperson')
+    ->paginate(20)
+    ->get(2);
+```
+
+If you wish to disable pagination completely use the `withoutPagination()` method:
  
 ```
 $query = MaximoQuery::withObjectStructure('mxperson')
@@ -160,8 +157,6 @@ $query = MaximoQuery::withObjectStructure('mxperson')
 ```
 
 Be **VERY** careful when disabling pagination and ensure that your query has been sufficiently filtered down or you could end up with a very **LARGE** response payload!
-
-<br />
 
 #### Record Count
 
@@ -183,27 +178,19 @@ MaximoQuery::withObjectStructure('mxperson')
     ->get();
 ``` 
 
-<br />
-
 #### Null Values
 
 By default, all requested columns are returned regardless of their values. If you wish to reduce the response payload, you may request that `null` values are not included in the response by using the `filterNullValues()` method.
 
-<br />
-
 #### Retrieving A Specific Record
 
 Like Eloquent, you can use the `find()` method to retrieve a single resource by passing in the unique ID. This will immediately send the request and, if found, return the requested resource as an array of `attribute => value` pairs.
-
-<br/>
 
 #### Executing The Query
 
 Almost all the methods return the current instance and as such can be chained to your heart's content.
 
 Once you are finished building the query, simply calling `get()` will execute the query and return  an instance of the `MaximoResponse` class.
-
-<br />
 
 #### Authentication
 
@@ -213,7 +200,7 @@ The cookies returned are then sent as part of the main request payload.
 
 The authentication cookies are stored in the cache for the configured cache lifetime specified in the `cache_ttl_minutes` config variable thus removing the need to authenticate for subsequent requests.
 
-<br />
+If you are running multiple sites from the same domain (e.g. https://system/one and https://system/two) each will require its own cookie key to avoid cross-site interference. This can be set in the config or the system `.env` using the `MAXIMO_KEY` setting.
 
 ### MaximoResponse Object
 
@@ -276,9 +263,14 @@ $pageThree = $pageTwo->nextPage();
 
 Calling either of these methods makes another http request and returns a new instance of the `MaximoResponse` object.
 
-<br/>
-
 ### Testing
+
+When utilising MaximoQuery in your tests, you can apply your expectations directly to the class instead of making your own mocks:
+
+```
+MaximoQuery::shouldReceive('withObjectStructure')
+    -> andThrow(new InvalidResponse());
+```
 
 ``` bash
 composer test
