@@ -19,11 +19,11 @@ test('filter method finds the specified key in response and returns it', functio
         ->paginate(5)
         ->get();
 
-    assertCount(4, $response->toArray());
+    $this->assertCount(4, $response->toArray());
 
-    assertCount(5, $response->filter('rdfs:member'));
+    $this->assertCount(5, $response->filter('rdfs:member'));
 
-    assertInstanceOf(Collection::class, $response->filter('rdfs:member', true));
+    $this->assertInstanceOf(Collection::class, $response->filter('rdfs:member', true));
 });
 
 
@@ -55,7 +55,7 @@ test('raw method returns the raw json response', function() {
         ->get()
         ->raw();
 
-    assertJson($response);
+    $this->assertJson($response);
 });
 
 
@@ -68,7 +68,7 @@ it('can return the response as a collection', function () {
         ->get()
         ->toCollection();
 
-    assertInstanceOf(Collection::class, $response);
+    $this->assertInstanceOf(Collection::class, $response);
 });
 
 
@@ -85,7 +85,7 @@ it('can get next page of a paginated dataset', function () {
 
     $page2 = $page1->nextPage();
 
-    assertStringContainsString('"pagenum":2', $page2->raw());
+    $this->assertStringContainsString('"pagenum":2', $page2->raw());
 
 });
 
@@ -103,7 +103,7 @@ it('can get previous page of a paginated dataset', function () {
 
     $page1 = $page2->prevPage();
 
-    assertStringContainsString('"pagenum":1', $page1->raw());
+    $this->assertStringContainsString('"pagenum":1', $page1->raw());
 });
 
 
@@ -116,6 +116,6 @@ it('returns null when trying to get the page of a non paginated dataset', functi
     $response = MaximoQuery::withObjectStructure('mxperson')
         ->get();
 
-    assertNull($response->nextPage());
+    $this->assertNull($response->nextPage());
 });
 
