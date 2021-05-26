@@ -3,6 +3,8 @@
 namespace Nrbusinesssystems\MaximoQuery;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidQuery;
 use Nrbusinesssystems\MaximoQuery\Traits\HasWhere;
 
@@ -79,7 +81,6 @@ class MaximoQuery
      * @return int|null
      * @throws Exceptions\CouldNotAuthenticate
      * @throws Exceptions\InvalidResponse
-     * @throws Exceptions\KeyNotFound
      * @throws InvalidQuery
      */
     public function count(): ?int
@@ -188,15 +189,15 @@ class MaximoQuery
      * Retrieves a single record using it's
      * unique identifier
      *
-     * @param $id
+     * @param $uniqueId
      * @return array
      * @throws Exceptions\CouldNotAuthenticate
      * @throws Exceptions\InvalidResponse
      * @throws InvalidQuery
      */
-    public function find($id): array
+    public function find($uniqueId): array
     {
-        $this->uniqueId = $id;
+        $this->uniqueId = $uniqueId;
 
         return $this->get()
             ->toArray();
@@ -213,7 +214,7 @@ class MaximoQuery
      * @throws Exceptions\InvalidResponse
      * @throws InvalidQuery
      */
-    public function get(int $page = null)
+    public function get(int $page = null): MaximoResponse
     {
         $this->page = $page;
 
@@ -221,15 +222,41 @@ class MaximoQuery
             ->get();
     }
 
+    /**
+     * @throws Exceptions\CouldNotAuthenticate
+     * @throws InvalidQuery
+     * @throws Exceptions\InvalidResponse
+     */
+    public function create(array $properties, $returnResource = false): MaximoResponse
+    {
+        return (new MaximoHttp($this->getUrl()))
+            ->post( $properties, $returnResource);
+    }
+
+    public function update()
+    {
+        //needs resource url
+    }
+
+    public function delete()
+    {
+        //needs resource url
+    }
+
 
     /**
      * Gets the url for the http request
      *
+     * @param bool $withQueryParameters
      * @return string
      * @throws InvalidQuery
      */
-    public function getUrl(): string
+    public function getUrl(bool $withQueryParameters = true): string
     {
+        if ($withQueryParameters === false) {
+            return $this->getBaseUrl();
+        }
+
         return $this->buildUrl();
     }
 
@@ -266,6 +293,19 @@ class MaximoQuery
         ];
     }
 
+    /**
+     * @throws InvalidQuery
+     */
+    private function getBaseUrl(): string
+    {
+        if (!$this->objectType) {
+            throw InvalidQuery::objectTypeNotSet();
+        }
+
+        $url = config('maximo-query.maximo_url');
+
+        return "{$url}/oslc/{$this->objectType}/{$this->queryObject}";
+    }
 
     /**
      * Builds the url from the various parameters set
@@ -276,17 +316,11 @@ class MaximoQuery
      */
     private function buildUrl(): string
     {
-        if (!$this->objectType) {
-            throw InvalidQuery::objectTypeNotSet();
-        }
-
-        $baseurl = config('maximo-query.maximo_url');
-
         $params = collect($this->getQueryParameters())
             ->filter()
             ->implode('&');
 
-        return "{$baseurl}/oslc/{$this->objectType}/{$this->queryObject}{$this->getUniqueId()}?{$params}";
+        return "{$this->getBaseUrl()}{$this->getUniqueId()}?{$params}";
     }
 
 

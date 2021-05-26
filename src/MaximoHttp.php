@@ -63,43 +63,80 @@ class MaximoHttp
         Cache::put($this->cacheKey, $response->cookies(), now()->addMinutes($this->cacheLifetime));
     }
 
-
     /**
      * Makes a GET request to Maximo using the url
      * constructed by the query builder
      *
-     * @return \Illuminate\Http\Client\Response
-     * @throws CouldNotAuthenticate
-     * @throws InvalidResponse
-     */
-    protected function getResponse()
-    {
-        if (!Cache::has($this->cacheKey)) {
-            $this->authenticate();
-        }
-
-        $response = Http::withOptions([
-            'cookies' => Cache::get($this->cacheKey)
-        ])->get($this->url);
-
-        if (!$response->ok()) {
-            throw InvalidResponse::notOk($response->toPsrResponse());
-        }
-
-        return $response;
-    }
-
-
-    /**
      * @return MaximoResponse
      * @throws CouldNotAuthenticate
      * @throws InvalidResponse
      */
     public function get(): MaximoResponse
     {
-        $response = $this->getResponse();
+        if (!Cache::has($this->cacheKey)) {
+            $this->authenticate();
+        }
+
+        $response = $this->validateResponse(
+            Http::withOptions([
+                'cookies' => Cache::get($this->cacheKey)
+            ])->get($this->url)
+        );
 
         return new MaximoResponse($response, $this->url);
+    }
+
+    /**
+     * @throws CouldNotAuthenticate
+     * @throws InvalidResponse
+     */
+    public function post(array $properties, $returnResource = false): MaximoResponse
+    {
+        if (!Cache::has($this->cacheKey)) {
+            $this->authenticate();
+        }
+
+        $options = ['cookies' => Cache::get($this->cacheKey)];
+
+        if ($returnResource === true) {
+            $options = array_merge(
+                $options,
+                [
+                    'headers' => [
+                        'properties' => '*'
+                    ]
+                ]
+            );
+        }
+
+        $response = $this->validateResponse(
+            Http::withOptions($options)
+                ->post($this->url, $properties)
+        );
+
+        return new MaximoResponse($response, $this->url);
+    }
+
+    public function patch()
+    {
+
+    }
+
+    public function delete()
+    {
+
+    }
+
+    /**
+     * @throws InvalidResponse
+     */
+    protected function validateResponse($response)
+    {
+        if ($response->ok()) {
+            return $response;
+        }
+
+        throw InvalidResponse::notOk($response->toPsrResponse());
     }
 
 }

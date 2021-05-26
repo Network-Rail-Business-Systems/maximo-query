@@ -95,7 +95,7 @@ class MaximoResponse
      * @throws Exceptions\CouldNotAuthenticate
      * @throws Exceptions\InvalidResponse
      */
-    public function nextPage()
+    public function nextPage(): ?MaximoResponse
     {
         return $this->getPage('nextPage');
     }
@@ -108,7 +108,7 @@ class MaximoResponse
      * @throws Exceptions\CouldNotAuthenticate
      * @throws Exceptions\InvalidResponse
      */
-    public function prevPage()
+    public function prevPage(): ?MaximoResponse
     {
         return $this->getPage('previousPage');
     }
@@ -156,7 +156,7 @@ class MaximoResponse
      * @throws Exceptions\CouldNotAuthenticate
      * @throws Exceptions\InvalidResponse
      */
-    private function getPage(string $page)
+    private function getPage(string $page): ?MaximoResponse
     {
         try {
             $pageResource = $this->filter("oslc:{$page}", false);

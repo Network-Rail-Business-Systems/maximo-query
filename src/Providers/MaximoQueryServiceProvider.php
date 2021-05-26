@@ -28,7 +28,7 @@ class MaximoQueryServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../../config/config.php', 'maximo-query');
 
         // Register the main class to use with the facade
-        $this->app->singleton('maximo-query', function () {
+        $this->app->bind('maximo-query', function () {
             return new MaximoQuery();
         });
     }
