@@ -18,7 +18,7 @@ class MaximoQuery
 
     private ?string $queryObject = null;
 
-    private ?int $uniqueId = null;
+    private ?string $uniqueId = null;
 
     private ?int $pageSize = 1000;
 
