@@ -230,7 +230,7 @@ class MaximoQuery
     public function create(array $properties, $returnResource = false): MaximoResponse
     {
         return (new MaximoHttp($this->getUrl()))
-            ->post( $properties, $returnResource);
+            ->post($properties, $returnResource);
     }
 
     public function update()
