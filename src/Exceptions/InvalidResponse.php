@@ -11,7 +11,6 @@ class InvalidResponse extends Exception
 
     public static function notOk(Response $response): self
     {
-        dump($response);
         return new self("{$response->getStatusCode()}: {$response->getReasonPhrase()}");
     }
 }

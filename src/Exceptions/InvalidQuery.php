@@ -3,7 +3,6 @@
 namespace Nrbusinesssystems\MaximoQuery\Exceptions;
 
 use Exception;
-use Nrbusinesssystems\MaximoQuery\MaximoQuery;
 
 class InvalidQuery extends Exception
 {
@@ -17,6 +16,11 @@ class InvalidQuery extends Exception
     public static function invalidWhereOperator(array $validOperators = []): self
     {
         return new self("Invalid operator passed to 'where()' method. Please use one of the following: \n" . print_r($validOperators, true));
+    }
+
+    public static function nope(): self
+    {
+        return new self("The boss said 'No!'");
     }
 
 

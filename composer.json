@@ -16,11 +16,14 @@
         }
     ],
     "require": {
-        "php": "7.4 - 8.0",
+        "php": "8.0",
         "guzzlehttp/guzzle": "^7.3",
         "ext-json": "*"
     },
     "autoload": {
+        "files": [
+            "src/helpers.php"
+        ],
         "psr-4": {
             "Nrbusinesssystems\\MaximoQuery\\": "src"
         }
@@ -37,7 +40,7 @@
     "config": {
         "sort-packages": true,
         "platform": {
-            "php": "7.4"
+            "php": "8.0"
         }
     },
     "extra": {

@@ -2,6 +2,8 @@
 
 namespace Nrbusinesssystems\MaximoQuery;
 
+use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Nrbusinesssystems\MaximoQuery\Exceptions\CouldNotAuthenticate;
@@ -9,26 +11,28 @@ use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidResponse;
 
 class MaximoHttp
 {
+    protected string $cacheKey;
 
-    private string $cacheKey;
+    protected ?string $username;
 
-    private string $url;
+    protected ?string $password;
 
-    private ?string $username;
+    protected int $cacheLifetime;
 
-    private ?string $password;
+    protected array $headers = [];
 
-    private int $cacheLifetime;
+    protected array $options = [];
 
 
     /**
      * MaximoHttp constructor.
      * @param string $url
+     * @param bool $debug
      */
-    public function __construct(string $url)
-    {
-        $this->url = $url;
-
+    public function __construct(
+        private string $url,
+        private bool $debug = false
+    ){
         $this->cacheKey = config('maximo-query.cookie_cache_key');
 
         $this->username = config('maximo-query.maximo_username');
@@ -45,7 +49,7 @@ class MaximoHttp
      *
      * @throws CouldNotAuthenticate
      */
-    protected function authenticate()
+    protected function authenticate(): void
     {
         if (!($this->username && $this->password)) {
             throw CouldNotAuthenticate::credentialsNotSetInConfig();
@@ -73,14 +77,11 @@ class MaximoHttp
      */
     public function get(): MaximoResponse
     {
-        if (!Cache::has($this->cacheKey)) {
-            $this->authenticate();
-        }
+        $this->setCookies();
 
         $response = $this->validateResponse(
-            Http::withOptions([
-                'cookies' => Cache::get($this->cacheKey)
-            ])->get($this->url)
+            $this->getClient()
+                ->get(url: $this->url)
         );
 
         return new MaximoResponse($response, $this->url);
@@ -90,53 +91,102 @@ class MaximoHttp
      * @throws CouldNotAuthenticate
      * @throws InvalidResponse
      */
-    public function post(array $properties, $returnResource = false): MaximoResponse
+    public function post(array $data, array $returnedProperties = []): MaximoResponse
     {
-        if (!Cache::has($this->cacheKey)) {
-            $this->authenticate();
-        }
+        $this->setCookies();
 
-        $options = ['cookies' => Cache::get($this->cacheKey)];
-
-        if ($returnResource === true) {
-            $options = array_merge(
-                $options,
-                [
-                    'headers' => [
-                        'properties' => '*'
-                    ]
-                ]
-            );
-        }
+        $this->setProperties(properties: $returnedProperties);
 
         $response = $this->validateResponse(
-            Http::withOptions($options)
-                ->post($this->url, $properties)
+            $this->getClient()
+                ->post(
+                    url: $this->url,
+                    data: $data
+                )
         );
 
         return new MaximoResponse($response, $this->url);
     }
 
-    public function patch()
+    /**
+     * @throws CouldNotAuthenticate
+     * @throws InvalidResponse
+     */
+    public function patch(array $data, array $returnedProperties = []): MaximoResponse
     {
+        $this->setCookies();
 
+        $this->setProperties(properties: $returnedProperties);
+
+        $this->addHeader(
+            key: 'x-method-override',
+            value: 'PATCH'
+        );
+
+        $response = $this->validateResponse(
+            $this->getClient()
+                ->post(
+                    url: $this->url,
+                    data: $data
+                )
+        );
+
+        return new MaximoResponse($response, $this->url);
     }
 
     public function delete()
     {
-
+        //... To be, or not to be: that is the question:
     }
 
     /**
      * @throws InvalidResponse
      */
-    protected function validateResponse($response)
+    protected function validateResponse(Response $response): Response
     {
-        if ($response->ok()) {
+        if ($response->successful()) {
             return $response;
         }
 
         throw InvalidResponse::notOk($response->toPsrResponse());
+    }
+
+    /**
+     * @throws CouldNotAuthenticate
+     */
+    protected function setCookies(): void
+    {
+        if (!Cache::has($this->cacheKey)) {
+            $this->authenticate();
+        }
+
+        $this->options = ['cookies' => Cache::get($this->cacheKey)];
+    }
+
+    protected function addHeader($key, $value): void
+    {
+        $this->headers[$key] = $value;
+    }
+
+    protected function setProperties(array $properties = []): void
+    {
+        if (empty($properties) === false) {
+            $this->addHeader(
+                key: 'properties',
+                value: collect($properties)->implode(',')
+            );
+        }
+    }
+
+    protected function getClient(): PendingRequest
+    {
+        return Http::withHeaders($this->headers)
+            ->withOptions($this->options)
+            ->beforeSending(function ($pendingRequest) {
+                if ($this->debug === true) {
+                    dd($pendingRequest);
+                }
+            });
     }
 
 }
