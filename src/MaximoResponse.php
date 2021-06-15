@@ -9,11 +9,11 @@ class MaximoResponse
 {
 
     public function __construct(
-        protected string $rawResponse,
-        protected string $queryUrl
+        private string $rawResponse,
+        private string $queryUrl
     ){}
 
-    
+
     /**
      * Returns the value of a given key in the response
      *
@@ -118,12 +118,14 @@ class MaximoResponse
     private function getPage(string $page): MaximoResponse|null
     {
         try {
-            $pageResource = $this->filter("oslc:{$page}", false);
+            $pageResource = $this->filter($page, false);
         } catch (KeyNotFound $e) {
             return null;
         }
 
-        $url = str_replace('http://localhost/maximo', config('maximo-query.maximo_url'), $pageResource['rdf:resource']);
+        $url = config('maximo-query.maximo_url') . '/' . $pageResource['href'];
+
+
 
         return (new MaximoHttp($url))
             ->get();

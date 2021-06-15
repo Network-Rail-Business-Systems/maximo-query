@@ -3,11 +3,12 @@
 namespace Nrbusinesssystems\MaximoQuery\Exceptions;
 
 use Exception;
+use JetBrains\PhpStorm\Pure;
 
 class InvalidQuery extends Exception
 {
 
-    public static function objectTypeNotSet(): self
+    #[Pure] public static function objectTypeNotSet(): self
     {
         return new self("Object type not set! Use the 'withObjectStructure()' or the 'withMaximoBusinessObject()' methods and pass in the relevant data.");
     }
@@ -18,10 +19,12 @@ class InvalidQuery extends Exception
         return new self("Invalid operator passed to 'where()' method. Please use one of the following: \n" . print_r($validOperators, true));
     }
 
-    public static function nope(): self
+    #[Pure] public static function noWhereClause(): self
     {
-        return new self("The boss said 'No!'");
+        return new self('No where clause has been set. Please filter your query so that a single resource is updated');
     }
+
+
 
 
 }

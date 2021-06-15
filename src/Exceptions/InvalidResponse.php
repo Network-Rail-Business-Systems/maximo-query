@@ -3,14 +3,29 @@
 namespace Nrbusinesssystems\MaximoQuery\Exceptions;
 
 use Exception;
-use GuzzleHttp\Psr7\Response;
-use Nrbusinesssystems\MaximoQuery\MaximoQuery;
+use Illuminate\Http\Client\Response;
+use JetBrains\PhpStorm\Pure;
 
 class InvalidResponse extends Exception
 {
 
-    public static function notOk(Response $response): self
+    #[Pure] public static function notSuccessful(Response $response): self
     {
-        return new self("{$response->getStatusCode()}: {$response->getReasonPhrase()}");
+        ['Error' => $error] = $response;
+
+        return new self(message: $error['message'], code: $error['statusCode']);
+    }
+
+    #[Pure] public static function resourceNotFound(): self
+    {
+        return new self(message: 'A resource could not be found. Please try different parameters.', code: 404);
+    }
+
+    #[Pure] public static function multipleResourcesFound(): self
+    {
+        return new self(
+            message: 'Your query was ambiguous and multiple resources were found. Updates can only be performed on single resources.',
+            code: 403
+        );
     }
 }

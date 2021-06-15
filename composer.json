@@ -57,6 +57,7 @@
         "nunomaduro/collision": "^5.4",
         "orchestra/testbench": "^6.17",
         "pestphp/pest": "^1.0",
+        "pestphp/pest-plugin-mock": "^1.0",
         "phpunit/phpunit": "^9.5"
     },
     "minimum-stability": "dev",

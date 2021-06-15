@@ -4,37 +4,34 @@ namespace Nrbusinesssystems\MaximoQuery;
 
 use Illuminate\Support\Arr;
 use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidQuery;
+use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidResponse;
 use Nrbusinesssystems\MaximoQuery\Traits\HasWhere;
 
 class MaximoQuery
 {
     use HasWhere;
 
-    protected ?array $columns = null;
+    private ?array $columns = null;
 
-    protected ?string $objectType = null;
+    private ?string $objectType = null;
 
-    protected ?string $queryObject = null;
+    private ?string $queryObject = null;
 
-    protected ?int $pageSize = 1000;
+    private ?int $pageSize = 1000;
 
-    protected bool $dropNulls = false;
+    private bool $dropNulls = false;
 
-    protected bool $collectionCount = false;
+    private bool $collectionCount = false;
 
-    protected bool $count = false;
+    private bool $count = false;
 
-    protected array $orderBy = [];
+    private array $orderBy = [];
 
-    protected ?int $page = null;
+    private ?int $page = null;
 
-    protected bool $namespaced = false;
+    private ?string $url = null;
 
-    protected bool $relativeuri = true;
-
-    protected ?string $url = null;
-
-    protected ?bool $debug = false;
+    private ?bool $debug = false;
 
     /**
      * Allows you to view all the class parameters
@@ -100,16 +97,17 @@ class MaximoQuery
      */
     public function count(): ?int
     {
-        $queryString = $this->getQueryString(
-            $this->getNamespaced(),
-            $this->getRelativeUri(),
-            $this->getWhere(),
-            "count=1"
-        );
+//        $queryString = $this->getQueryString(
+//            $this->getDefaultParameters(),
+//            $this->getWhere(),
+//            "count=1"
+//        );
+//
+//        $this->url = "{$this->getBaseUrl()}?{$queryString}";
 
-        $this->url = "{$this->getBaseUrl()}?{$queryString}";
+        $this->count = true;
 
-        return (new MaximoHttp(url: $this->url, debug: $this->debug))
+        return (new MaximoHttp(url: $this->getUrl(), debug: $this->debug))
             ->get()
             ->getCount();
     }
@@ -206,26 +204,6 @@ class MaximoQuery
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    public function withNamespacing(): self
-    {
-        $this->namespaced = true;
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function withAbsoluteUrls(): self
-    {
-        $this->relativeuri = false;
-
-        return $this;
-    }
-
 
     /**
      * Retrieves a single record using it's
@@ -239,15 +217,14 @@ class MaximoQuery
      */
     public function find(string $restId): null|array
     {
-        $queryString = $this->getQueryString(
-            $this->getNamespaced(),
-            $this->getRelativeUri(),
-            $this->getSelect(),
-        );
+//        $queryString = $this->getQueryString(
+//            $this->getDefaultParameters(),
+//            $this->getSelect(),
+//        );
+//
+//        $this->url = "{$this->getBaseUrl()}/{$restId}?{$queryString}";
 
-        $this->url = "{$this->getBaseUrl()}/{$restId}?{$queryString}";
-
-        return (new MaximoHttp(url: $this->url, debug: $this->debug))
+        return (new MaximoHttp(url: $this->getUrl($restId), debug: $this->debug))
             ->get()
             ->toArray();
     }
@@ -267,21 +244,20 @@ class MaximoQuery
     {
         $this->page = $page;
 
-        $queryString = $this->getQueryString(
-            $this->getNamespaced(),
-            $this->getRelativeUri(),
-            $this->getSelect(),
-            $this->getWhere(),
-            $this->getOrderBy(),
-            $this->getPage(),
-            $this->getPageSize(),
-            $this->getDropNulls(),
-            $this->getCollectionCount(),
-        );
+//        $queryString = $this->getQueryString(
+//            $this->getDefaultParameters(),
+//            $this->getSelect(),
+//            $this->getWhere(),
+//            $this->getOrderBy(),
+//            $this->getPage(),
+//            $this->getPageSize(),
+//            $this->getDropNulls(),
+//            $this->getCollectionCount(),
+//        );
+//
+//        $this->url = "{$this->getBaseUrl()}?{$queryString}";
 
-        $this->url = "{$this->getBaseUrl()}?{$queryString}";
-
-        return (new MaximoHttp(url: $this->url, debug: $this->debug))
+        return (new MaximoHttp(url: $this->getUrl(), debug: $this->debug))
             ->get();
     }
 
@@ -292,17 +268,16 @@ class MaximoQuery
      */
     public function create(array $data, array $properties = []): MaximoResponse
     {
-        $queryString = $this->getQueryString(
-            $this->getNamespaced(),
-            $this->getRelativeUri(),
-        );
-
-        $this->url = "{$this->getBaseUrl()}?{$queryString}";
+//        $queryString = $this->getQueryString(
+//            $this->getDefaultParameters(),
+//        );
+//
+//        $this->url = "{$this->getBaseUrl()}?{$queryString}";
 
         $data = array_lowercase_keys(array: $data);
         $properties = array_lowercase_values(array: $properties);
 
-        return (new MaximoHttp(url: $this->url, debug: $this->debug))
+        return (new MaximoHttp(url: $this->getUrl(), debug: $this->debug))
             ->post(data: $data, returnedProperties: $properties);
     }
 
@@ -310,29 +285,63 @@ class MaximoQuery
      * @throws Exceptions\CouldNotAuthenticate
      * @throws InvalidQuery
      * @throws Exceptions\InvalidResponse
+     * @throws Exceptions\KeyNotFound
      */
-    public function update(string $restId, array $data, array $properties = []): MaximoResponse
+    public function update(array $data, array $properties = []): MaximoResponse
     {
-        $queryString = $this->getQueryString(
-            $this->getNamespaced(),
-            $this->getRelativeUri(),
-        );
-
-        $this->url = "{$this->getBaseUrl()}/{$restId}?{$queryString}";
+        $url = $this->getResourceUrl();
 
         $data = array_lowercase_keys(array: $data);
         $properties = array_lowercase_values(array: $properties);
 
-        return (new MaximoHttp(url: $this->url, debug: $this->debug))
+        return (new MaximoHttp(url: $url))
             ->patch(data: $data, returnedProperties: $properties);
     }
 
     /**
      * @throws InvalidQuery
+     * @throws Exceptions\CouldNotAuthenticate
+     * @throws Exceptions\KeyNotFound
+     * @throws Exceptions\InvalidResponse
      */
-    public function delete()
+    private function getResourceUrl(): string
     {
-        throw InvalidQuery::nope();
+        $where = $this->getWhere();
+
+        if (is_null($where)) {
+            throw InvalidQuery::noWhereClause();
+        }
+
+        //force the minimum pagination to check for a single resource
+        $this->paginate(2);
+
+//        $queryString = $this->getQueryString(
+//            $this->getDefaultParameters(),
+//            $where
+//        );
+//
+//        $this->url = "{$this->getBaseUrl()}?{$queryString}";
+
+        $resource = (new MaximoHttp(url: $this->getUrl(), debug: $this->debug))
+            ->get()
+            ->filter('member')
+            ->pluck('href');
+
+        if ($resource->isEmpty()) {
+            throw InvalidResponse::resourceNotFound();
+        }
+
+        if ($resource->count() > 1) {
+            throw InvalidResponse::multipleResourcesFound();
+        }
+
+//        $queryString = $this->getQueryString(
+//            $this->getDefaultParameters(),
+//        );
+//
+//        return "{$this->getBaseUrl()}/{$resource->first()}?{$queryString}";
+
+        return $this->getUrl($resource->first());
     }
 
     /**
@@ -347,6 +356,22 @@ class MaximoQuery
         $url = config('maximo-query.maximo_url');
 
         return "{$url}/oslc/{$this->objectType}/{$this->queryObject}";
+    }
+
+    /**
+     * @throws InvalidQuery
+     */
+    public function getUrl(...$pathParameters): string
+    {
+        $queryString = $this->getQueryString();
+        $baseUrl = $this->getBaseUrl();
+        $path = collect($pathParameters)
+            ->whenNotEmpty(
+                fn ($collection) => '/' . $collection->implode('/'),
+                fn () => ''
+            );
+
+        return "{$baseUrl}{$path}?{$queryString}";
     }
 
 
@@ -382,6 +407,21 @@ class MaximoQuery
         }
 
         return "oslc.pageSize={$this->pageSize}";
+    }
+
+    /**
+     * Generates the count portion of the query string
+     * if count method has been called
+     *
+     * @return string|void
+     */
+    private function getCount()
+    {
+        if ($this->count === false) {
+            return;
+        }
+
+        return 'count=1';
     }
 
 
@@ -440,30 +480,26 @@ class MaximoQuery
         return "pageno={$this->page}";
     }
 
-    /**
-     * Generates the namespaced portion of the query string
-     */
-    private function getNamespaced(): string|null
+    private function getDefaultParameters(): string
     {
-        if ($this->namespaced === true) {
-            return null;
-        }
-
-        return 'lean=1';
+        return 'lean=1&relativeuri=1';
     }
 
-    private function getRelativeUri(): string|null
+    private function getQueryString(): string
     {
-        if ($this->relativeuri === false) {
-            return null;
-        }
+        $parameters = [
+            $this->getDefaultParameters(),
+            $this->getSelect(),
+            $this->getWhere(),
+            $this->getOrderBy(),
+            $this->getPage(),
+            $this->getPageSize(),
+            $this->getDropNulls(),
+            $this->getCollectionCount(),
+            $this->getCount(),
+        ];
 
-        return 'relativeuri=1';
-    }
-
-    private function getQueryString(...$values): string
-    {
-        return collect($values)
+        return collect($parameters)
             ->flatten()
             ->filter()
             ->implode('&');

@@ -130,7 +130,7 @@ trait HasWhere
      * @param $column
      * @return $this
      */
-    public function whereNotNull($column)
+    public function whereNotNull($column): static
     {
         $this->where[] = "{$column}=\"*\"";
 
@@ -138,13 +138,10 @@ trait HasWhere
     }
 
 
-    /**
-     * @return string|void
-     */
-    private function getWhere()
+    private function getWhere(): string|null
     {
         if (blank($this->where)) {
-            return;
+            return null;
         }
 
         $imploded = collect($this->where)
@@ -159,9 +156,9 @@ trait HasWhere
      * Used in the construction of the where clause.
      *
      * @param $value
-     * @return string
+     * @return int|string
      */
-    private function quoteString($value)
+    private function quoteString($value): int|string
     {
         if (is_numeric($value)) {
             return $value;
