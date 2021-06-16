@@ -165,12 +165,14 @@ class MaximoHttp
 
     private function setProperties(array $properties = []): void
     {
-        if (empty($properties) === false) {
-            $this->addHeader(
-                key: 'properties',
-                value: collect($properties)->implode(',')
-            );
-        }
+        $properties = empty($properties) === false
+            ? collect($properties)->implode(',')
+            : '*';
+
+        $this->addHeader(
+            key: 'properties',
+            value: $properties
+        );
     }
 
     private function getClient(): PendingRequest

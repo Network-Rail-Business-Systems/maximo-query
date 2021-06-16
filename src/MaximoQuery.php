@@ -97,14 +97,6 @@ class MaximoQuery
      */
     public function count(): ?int
     {
-//        $queryString = $this->getQueryString(
-//            $this->getDefaultParameters(),
-//            $this->getWhere(),
-//            "count=1"
-//        );
-//
-//        $this->url = "{$this->getBaseUrl()}?{$queryString}";
-
         $this->count = true;
 
         return (new MaximoHttp(url: $this->getUrl(), debug: $this->debug))
@@ -217,13 +209,6 @@ class MaximoQuery
      */
     public function find(string $restId): null|array
     {
-//        $queryString = $this->getQueryString(
-//            $this->getDefaultParameters(),
-//            $this->getSelect(),
-//        );
-//
-//        $this->url = "{$this->getBaseUrl()}/{$restId}?{$queryString}";
-
         return (new MaximoHttp(url: $this->getUrl($restId), debug: $this->debug))
             ->get()
             ->toArray();
@@ -244,19 +229,6 @@ class MaximoQuery
     {
         $this->page = $page;
 
-//        $queryString = $this->getQueryString(
-//            $this->getDefaultParameters(),
-//            $this->getSelect(),
-//            $this->getWhere(),
-//            $this->getOrderBy(),
-//            $this->getPage(),
-//            $this->getPageSize(),
-//            $this->getDropNulls(),
-//            $this->getCollectionCount(),
-//        );
-//
-//        $this->url = "{$this->getBaseUrl()}?{$queryString}";
-
         return (new MaximoHttp(url: $this->getUrl(), debug: $this->debug))
             ->get();
     }
@@ -268,12 +240,6 @@ class MaximoQuery
      */
     public function create(array $data, array $properties = []): MaximoResponse
     {
-//        $queryString = $this->getQueryString(
-//            $this->getDefaultParameters(),
-//        );
-//
-//        $this->url = "{$this->getBaseUrl()}?{$queryString}";
-
         $data = array_lowercase_keys(array: $data);
         $properties = array_lowercase_values(array: $properties);
 
@@ -315,13 +281,6 @@ class MaximoQuery
         //force the minimum pagination to check for a single resource
         $this->paginate(2);
 
-//        $queryString = $this->getQueryString(
-//            $this->getDefaultParameters(),
-//            $where
-//        );
-//
-//        $this->url = "{$this->getBaseUrl()}?{$queryString}";
-
         $resource = (new MaximoHttp(url: $this->getUrl(), debug: $this->debug))
             ->get()
             ->filter('member')
@@ -335,13 +294,7 @@ class MaximoQuery
             throw InvalidResponse::multipleResourcesFound();
         }
 
-//        $queryString = $this->getQueryString(
-//            $this->getDefaultParameters(),
-//        );
-//
-//        return "{$this->getBaseUrl()}/{$resource->first()}?{$queryString}";
-
-        return $this->getUrl($resource->first());
+        return config('maximo-query.maximo_url') . '/' . $resource->first();
     }
 
     /**

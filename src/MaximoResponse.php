@@ -2,14 +2,14 @@
 
 namespace Nrbusinesssystems\MaximoQuery;
 
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Collection;
 use Nrbusinesssystems\MaximoQuery\Exceptions\KeyNotFound;
 
 class MaximoResponse
 {
-
     public function __construct(
-        private string $rawResponse,
+        private Response $response,
         private string $queryUrl
     ){}
 
@@ -41,14 +41,14 @@ class MaximoResponse
     /** Returns the raw json response */
     public function raw(): string
     {
-        return $this->rawResponse;
+        return $this->response;
     }
 
 
     /** Returns the response data as an associative array */
     public function toArray(): array|null
     {
-        return json_decode($this->rawResponse, true);
+        return json_decode($this->response->body(), true);
     }
 
 
