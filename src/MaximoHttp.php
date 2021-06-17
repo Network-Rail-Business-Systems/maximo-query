@@ -85,7 +85,7 @@ class MaximoHttp
 
         $client = $this->getClient()->buildBeforeSendingHandler();
 
-        dd($this->request);
+        dd($client);
 
         $response = $this->validateResponse(
             $this->getClient()
