@@ -19,7 +19,7 @@ class MaximoQueryServiceProvider extends ServiceProvider
         }
 
         \Illuminate\Http\Client\PendingRequest::macro('debug', function () {
-            dump($this->request);
+            dump($this);
         });
     }
 
