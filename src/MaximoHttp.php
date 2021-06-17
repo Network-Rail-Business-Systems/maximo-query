@@ -81,6 +81,8 @@ class MaximoHttp
      */
     public function get(): MaximoResponse
     {
+        $this->getClient()->dump();
+
         $this->setCookies();
 
         $response = $this->validateResponse(
@@ -179,22 +181,15 @@ class MaximoHttp
         );
     }
 
-    private function getClient(): PendingRequest|null
+    private function getClient(): PendingRequest
     {
-        try {
-            return Http::withHeaders($this->headers)
-                ->withOptions($this->options)
-                ->beforeSending(function ($request) {
-                    if ($this->debug === true) {
-                        throw Debug::dumpRequest($request);
-                    }
-                });
-        } catch (Debug $exception) {
-            //dump($exception->getMessage());
-
-            return null;
-        }
-
+        return Http::withHeaders($this->headers)
+            ->withOptions($this->options);
+//            ->beforeSending(function ($request) {
+//                if ($this->debug === true) {
+//                    throw Debug::dumpRequest($request);
+//                }
+//            });
     }
 
 }

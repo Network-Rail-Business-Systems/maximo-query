@@ -17,6 +17,10 @@ class MaximoQueryServiceProvider extends ServiceProvider
                 __DIR__ . '/../../config/config.php' => config_path('maximo-query.php'),
             ], 'config');
         }
+
+        \Illuminate\Http\Client\PendingRequest::macro('debug', function () {
+            dump($this->request);
+        });
     }
 
     /**
