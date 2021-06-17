@@ -83,7 +83,7 @@ class MaximoHttp
     {
         $this->setCookies();
 
-        $client = $this->getClient();
+        $client = $this->getClient()->buildBeforeSendingHandler();
 
         dd($this->request);
 
