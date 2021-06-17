@@ -3,6 +3,7 @@
 namespace Nrbusinesssystems\MaximoQuery;
 
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Request;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -23,6 +24,8 @@ class MaximoHttp
     private array $headers = [];
 
     private array $options = [];
+
+    private Request|null $request;
 
 
     /**
@@ -76,11 +79,13 @@ class MaximoHttp
      * @throws CouldNotAuthenticate
      * @throws InvalidResponse
      */
-    public function get()
+    public function get(): MaximoResponse
     {
         $this->setCookies();
 
-        dd($this->getClient()->request);
+        $client = $this->getClient();
+
+        dd($this->request);
 
         $response = $this->validateResponse(
             $this->getClient()
@@ -182,11 +187,12 @@ class MaximoHttp
     {
         return Http::withHeaders($this->headers)
             ->withOptions($this->options)
-            ->beforeSending(function ($pendingRequest) {
-                if ($this->debug === true) {
-                    throw Debug::dumpRequest($pendingRequest);
-//                    dd($pendingRequest);
-                }
+            ->beforeSending(function ($request) {
+                $this->request = $request;
+//                if ($this->debug === true) {
+//                    throw Debug::dumpRequest($pendingRequest);
+////                    dd($pendingRequest);
+//                }
             });
     }
 
