@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Nrbusinesssystems\MaximoQuery\Facades\MaximoQuery;
 
@@ -15,5 +16,5 @@ test('raw method returns the raw json response', function() {
         ->get()
         ->raw();
 
-    $this->assertJson($response);
+    $this->assertInstanceOf(Response::class, $response);
 });

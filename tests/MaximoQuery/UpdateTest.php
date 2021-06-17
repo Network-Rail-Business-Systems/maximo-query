@@ -41,9 +41,21 @@ it('will throw an exception if no resource is found', function() {
     exceptionMessage: 'A resource could not be found. Please try different parameters.'
 );
 
-it('it updates the resource and returns the the correct properties');
-
-it('it updates the resource and returns no properties');
+//it('it updates the resource and returns the the correct properties', function() {
+//    Http::fake([
+//        '*' => Http::response(require __DIR__ . '/../stubs/responses/update-with-properties.php')
+//    ]);
+//
+//    $responseData = MaximoQuery::withObjectStructure('trim')
+//        ->where('ticketid','ABEY12351')
+//        ->update(
+//            ['description' => 'Maximo Query Test Update'],
+//            ['ticketid', 'description', 'description_longdescription']
+//        )
+//        ->toArray();
+//});
+//
+//it('it updates the resource and returns no properties');
 
 
 

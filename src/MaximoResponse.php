@@ -38,8 +38,8 @@ class MaximoResponse
     }
 
 
-    /** Returns the raw json response */
-    public function raw(): string
+    /** Returns the raw response */
+    public function raw(): Response
     {
         return $this->response;
     }

@@ -7,6 +7,7 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Nrbusinesssystems\MaximoQuery\Exceptions\CouldNotAuthenticate;
+use Nrbusinesssystems\MaximoQuery\Exceptions\Debug;
 use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidResponse;
 
 class MaximoHttp
@@ -75,9 +76,11 @@ class MaximoHttp
      * @throws CouldNotAuthenticate
      * @throws InvalidResponse
      */
-    public function get(): MaximoResponse
+    public function get()
     {
         $this->setCookies();
+
+        dd($this->getClient());
 
         $response = $this->validateResponse(
             $this->getClient()
@@ -167,7 +170,7 @@ class MaximoHttp
     {
         $properties = empty($properties) === false
             ? collect($properties)->implode(',')
-            : '*';
+            : '_rowstamp,href';
 
         $this->addHeader(
             key: 'properties',
@@ -181,7 +184,8 @@ class MaximoHttp
             ->withOptions($this->options)
             ->beforeSending(function ($pendingRequest) {
                 if ($this->debug === true) {
-                    dd($pendingRequest);
+                    throw Debug::dumpRequest($pendingRequest);
+//                    dd($pendingRequest);
                 }
             });
     }
