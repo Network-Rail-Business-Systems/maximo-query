@@ -133,7 +133,7 @@ class MaximoResponse
 
     public function __toString(): string
     {
-        return $this->response->json();
+        return (string) $this->response;
     }
 
 }
