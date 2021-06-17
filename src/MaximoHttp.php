@@ -190,7 +190,7 @@ class MaximoHttp
                     }
                 });
         } catch (Debug $exception) {
-            dump($exception->getMessage());
+            //dump($exception->getMessage());
 
             return null;
         }
