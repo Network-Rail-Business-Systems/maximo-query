@@ -83,10 +83,6 @@ class MaximoHttp
     {
         $this->setCookies();
 
-        $client = $this->getClient()->buildBeforeSendingHandler();
-
-        dd($client());
-
         $response = $this->validateResponse(
             $this->getClient()
                 ->get(url: $this->url)
@@ -183,17 +179,22 @@ class MaximoHttp
         );
     }
 
-    private function getClient(): PendingRequest
+    private function getClient(): PendingRequest|null
     {
-        return Http::withHeaders($this->headers)
-            ->withOptions($this->options)
-            ->beforeSending(function ($request) {
-                $this->request = $request;
-//                if ($this->debug === true) {
-//                    throw Debug::dumpRequest($pendingRequest);
-////                    dd($pendingRequest);
-//                }
-            });
+        try {
+            return Http::withHeaders($this->headers)
+                ->withOptions($this->options)
+                ->beforeSending(function ($request) {
+                    if ($this->debug === true) {
+                        throw Debug::dumpRequest($request);
+                    }
+                });
+        } catch (Debug $exception) {
+            dump($exception->getMessage());
+
+            return null;
+        }
+
     }
 
 }
