@@ -80,7 +80,7 @@ class MaximoHttp
     {
         $this->setCookies();
 
-        dd($this->getClient());
+        dd($this->getClient()->buildClient());
 
         $response = $this->validateResponse(
             $this->getClient()
