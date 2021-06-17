@@ -31,19 +31,6 @@ class MaximoQuery
 
     private ?string $url = null;
 
-    private ?bool $debug = false;
-
-    /**
-     * Allows you to view all the class parameters
-     * @return $this
-     */
-    public function debug(): static
-    {
-        $this->debug = true;
-
-        return $this;
-    }
-
 
     /**
      * Set the pagination for the results
@@ -99,7 +86,7 @@ class MaximoQuery
     {
         $this->count = true;
 
-        return (new MaximoHttp(url: $this->getUrl(), debug: $this->debug))
+        return (new MaximoHttp(url: $this->getUrl()))
             ->get()
             ->getCount();
     }
@@ -209,7 +196,7 @@ class MaximoQuery
      */
     public function find(string $restId): null|array
     {
-        return (new MaximoHttp(url: $this->getUrl($restId), debug: $this->debug))
+        return (new MaximoHttp(url: $this->getUrl($restId)))
             ->get()
             ->toArray();
     }
@@ -229,7 +216,7 @@ class MaximoQuery
     {
         $this->page = $page;
 
-        return (new MaximoHttp(url: $this->getUrl(), debug: $this->debug))
+        return (new MaximoHttp(url: $this->getUrl()))
             ->get();
     }
 
@@ -243,7 +230,7 @@ class MaximoQuery
         $data = array_lowercase_keys(array: $data);
         $properties = array_lowercase_values(array: $properties);
 
-        return (new MaximoHttp(url: $this->getUrl(), debug: $this->debug))
+        return (new MaximoHttp(url: $this->getUrl()))
             ->post(data: $data, returnedProperties: $properties);
     }
 
@@ -281,7 +268,7 @@ class MaximoQuery
         //force the minimum pagination to check for a single resource
         $this->paginate(2);
 
-        $resource = (new MaximoHttp(url: $this->getUrl(), debug: $this->debug))
+        $resource = (new MaximoHttp(url: $this->getUrl()))
             ->get()
             ->filter('member')
             ->pluck('href');

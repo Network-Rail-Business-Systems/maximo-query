@@ -31,11 +31,9 @@ class MaximoHttp
     /**
      * MaximoHttp constructor.
      * @param string $url
-     * @param bool $debug
      */
     public function __construct(
-        private string $url,
-        private bool $debug = false
+        private string $url
     ){
         $this->cacheKey = config('maximo-query.cookie_cache_key');
 
@@ -81,10 +79,6 @@ class MaximoHttp
      */
     public function get(): MaximoResponse
     {
-        $this->getClient()->debug();
-
-        exit;
-
         $this->setCookies();
 
         $response = $this->validateResponse(
@@ -187,11 +181,6 @@ class MaximoHttp
     {
         return Http::withHeaders($this->headers)
             ->withOptions($this->options);
-//            ->beforeSending(function ($request) {
-//                if ($this->debug === true) {
-//                    throw Debug::dumpRequest($request);
-//                }
-//            });
     }
 
 }

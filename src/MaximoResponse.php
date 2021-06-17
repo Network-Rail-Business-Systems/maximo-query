@@ -131,4 +131,9 @@ class MaximoResponse
             ->get();
     }
 
+    public function __toString(): string
+    {
+        return $this->response->json();
+    }
+
 }
