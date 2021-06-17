@@ -81,7 +81,7 @@ class MaximoHttp
      */
     public function get(): MaximoResponse
     {
-        $this->getClient()->dump();
+        $this->getClient()->debug();
 
         exit;
 
