@@ -14,6 +14,4 @@ test('the find method returns a single record as an array', function() {
         ->find(1191);
 
     $this->assertIsArray($response);
-
-    $this->assertArrayHasKey('personuid', $response);
 });

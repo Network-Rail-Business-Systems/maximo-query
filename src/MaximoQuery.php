@@ -230,8 +230,30 @@ class MaximoQuery
         $data = array_lowercase_keys(array: $data);
         $properties = array_lowercase_values(array: $properties);
 
-        return (new MaximoHttp(url: $this->getUrl()))
-            ->post(data: $data, returnedProperties: $properties);
+        //separates the attachments from the rest of the data
+        //attachments can only be sent after the creation of the resource
+        $attachments = $this->splitAttachments($data);
+
+        $returnedProperties = empty($attachments) ? $properties : ['href'];
+
+        $newResource = (new MaximoHttp(url: $this->getUrl()))
+            ->post(data: $data, returnedProperties: $returnedProperties);
+
+        if (empty($attachments) === true) {
+            return $newResource;
+        }
+
+        $attachmentsUrl = config('maximo-query.maximo_url') . '/' . $newResource->filter('href') . '/doclinks';
+
+        return (new MaximoHttp(url: $attachmentsUrl))
+            ->post(data: $attachments, returnedProperties: $properties);
+    }
+
+    private function splitAttachments(array &$dataArray)
+    {
+        $attachments = $dataArray['doclinks'] ?? [];
+        unset($dataArray['doclinks']);
+        return $attachments;
     }
 
     /**
