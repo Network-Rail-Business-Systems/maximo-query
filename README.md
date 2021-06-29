@@ -342,6 +342,18 @@ $pageThree = $pageTwo->nextPage();
 
 Calling either of these methods makes another http request and returns a new instance of the `MaximoResponse` object.
 
+### Upgrading To V2
+
+The response returned from Maximo is no longer namespaced i.e. `rdfs:member` to simplify and reduce the response payload. Simply removing the prefix is all that is needed for this change.
+
+The `raw` method of the `MaximoResponse` class now returns an instance of `Illuminate\Http\Client\Response` instead of a JSON string.
+
+A new `MaximoQuery` instance is returned when using the Facade rather than the cached singleton as with previous versions. This means calling `MaximoQuery::withObjectStructure('trim')` is the same as calling `(new MaximoQuery())->withObjectStructure('trim')`.
+
+
+
+
+
 ### Testing
 
 When utilising MaximoQuery in your tests, you can apply your expectations directly to the class instead of making your own mocks:
