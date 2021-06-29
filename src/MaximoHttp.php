@@ -2,17 +2,18 @@
 
 namespace Nrbusinesssystems\MaximoQuery;
 
+use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Request;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Nrbusinesssystems\MaximoQuery\Exceptions\CouldNotAuthenticate;
+use Nrbusinesssystems\MaximoQuery\Exceptions\Debug;
 use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidResponse;
 
 class MaximoHttp
 {
-
     private string $cacheKey;
-
-    private string $url;
 
     private ?string $username;
 
@@ -20,15 +21,17 @@ class MaximoHttp
 
     private int $cacheLifetime;
 
+    private array $headers = [];
+
+    private array $options = [];
+
 
     /**
      * MaximoHttp constructor.
-     * @param string $url
      */
-    public function __construct(string $url)
-    {
-        $this->url = $url;
-
+    public function __construct(
+        private string $url
+    ){
         $this->cacheKey = config('maximo-query.cookie_cache_key');
 
         $this->username = config('maximo-query.maximo_username');
@@ -45,7 +48,7 @@ class MaximoHttp
      *
      * @throws CouldNotAuthenticate
      */
-    protected function authenticate()
+    private function authenticate(): void
     {
         if (!($this->username && $this->password)) {
             throw CouldNotAuthenticate::credentialsNotSetInConfig();
@@ -63,43 +66,117 @@ class MaximoHttp
         Cache::put($this->cacheKey, $response->cookies(), now()->addMinutes($this->cacheLifetime));
     }
 
-
     /**
      * Makes a GET request to Maximo using the url
      * constructed by the query builder
      *
-     * @return \Illuminate\Http\Client\Response
-     * @throws CouldNotAuthenticate
-     * @throws InvalidResponse
-     */
-    protected function getResponse()
-    {
-        if (!Cache::has($this->cacheKey)) {
-            $this->authenticate();
-        }
-
-        $response = Http::withOptions([
-            'cookies' => Cache::get($this->cacheKey)
-        ])->get($this->url);
-
-        if (!$response->ok()) {
-            throw InvalidResponse::notOk($response->toPsrResponse());
-        }
-
-        return $response;
-    }
-
-
-    /**
-     * @return MaximoResponse
      * @throws CouldNotAuthenticate
      * @throws InvalidResponse
      */
     public function get(): MaximoResponse
     {
-        $response = $this->getResponse();
+        $this->setCookies();
+
+        $response = $this->validateResponse(
+            $this->getClient()
+                ->get(url: $this->url)
+        );
 
         return new MaximoResponse($response, $this->url);
+    }
+
+    /**
+     * @throws CouldNotAuthenticate
+     * @throws InvalidResponse
+     */
+    public function post(array $data, array $returnedProperties = []): MaximoResponse
+    {
+        $this->setCookies();
+
+        $this->setProperties(properties: $returnedProperties);
+
+        $response = $this->validateResponse(
+            $this->getClient()
+                ->post(
+                    url: $this->url,
+                    data: $data
+                )
+        );
+
+        return new MaximoResponse($response, $this->url);
+    }
+
+    /**
+     * @throws CouldNotAuthenticate
+     * @throws InvalidResponse
+     */
+    public function patch(array $data, array $returnedProperties = []): MaximoResponse
+    {
+        $this->setCookies();
+
+        $this->setProperties(properties: $returnedProperties);
+
+        $this->addHeader(
+            key: 'x-method-override',
+            value: 'PATCH'
+        );
+
+        $response = $this->validateResponse(
+            $this->getClient()
+                ->post(
+                    url: $this->url,
+                    data: $data
+                )
+        );
+
+        return new MaximoResponse($response, $this->url);
+    }
+
+    /**
+     * @throws InvalidResponse
+     */
+    private function validateResponse(Response $response): Response
+    {
+        if ($response->successful()) {
+            return $response;
+        }
+
+        throw InvalidResponse::notSuccessful($response);
+    }
+
+    /**
+     * @throws CouldNotAuthenticate
+     */
+    private function setCookies(): void
+    {
+        if (!Cache::has($this->cacheKey)) {
+            $this->authenticate();
+        }
+
+        $this->options = ['cookies' => Cache::get($this->cacheKey)];
+    }
+
+    private function addHeader($key, $value): void
+    {
+        $this->headers[$key] = $value;
+    }
+
+    private function setProperties(array $properties = []): void
+    {
+        $properties = empty($properties) === false
+            ? collect($properties)->implode(',')
+            : '_rowstamp,href';
+
+        $this->addHeader(
+            key: 'properties',
+            value: $properties
+        );
+    }
+
+    private function getClient(): PendingRequest
+    {
+        return Http::withHeaders($this->headers)
+            ->withOptions($this->options);
     }
 
 }

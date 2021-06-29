@@ -2,6 +2,8 @@
 
 This package enables you to request and retrieve data from Maximo using a custom query builder.
 
+**IMPORTANT**: v2 of the package has breaking changes and should not be used in existing projects without taking the necessary refactoring into account. Please see the upgrade section for more information.
+
 ## Installation
 
 Add the following to your `composer.json` file:
@@ -9,7 +11,7 @@ Add the following to your `composer.json` file:
 ```
 "require": {
     ...
-    "nrbusinesssystems/maximo-query": "^0.3"
+    "nrbusinesssystems/maximo-query": "^2.0"
 },
 "repositories": [
     ...
@@ -49,6 +51,7 @@ $query = (new MaximoQuery)->withObjectStructure('mxperson');
 You must define a Maximo data object to query against by using the `withObjectStructure` method which takes the name of the object structure as its only parameter.
 
 Not defining the data object will result in an exception being thrown.
+
 
 #### Selecting Columns
 
@@ -186,7 +189,7 @@ By default, all requested columns are returned regardless of their values. If yo
 
 Like Eloquent, you can use the `find()` method to retrieve a single resource by passing in the unique ID. This will immediately send the request and, if found, return the requested resource as an array of `attribute => value` pairs.
 
-#### Executing The Query
+#### Executing The Query And Retrieving The Resource
 
 Almost all the methods return the current instance and as such can be chained to your heart's content.
 
@@ -202,14 +205,90 @@ The authentication cookies are stored in the cache for the configured cache life
 
 If you are running multiple sites from the same domain (e.g. https://system/one and https://system/two) each will require its own cookie key to avoid cross-site interference. This can be set in the config or the system `.env` using the `MAXIMO_KEY` setting.
 
+### Creating Resources
+
+Creating a new resource is as simple as calling the `create` method and passing an array:
+
+```
+$response = MaximoQuery::withObjectStructure('trim')
+	->create([
+		'class' => 'SR',
+		'assetsiteid' => 'TRIM',
+		'siteid' => 'TRIM',
+		'nrbusinessarea' => 'Internal to NR',
+		'assetnum' => 'MAXIMO',
+		'description' => 'Some Title',
+		'description_longdescription' => 'Some description',
+		'reportdate' => Carbon::Now()->format('Y-m-d\TH:i:s+00:00'),
+		'nraffectedperson' => 'Christopher Abey',
+		'nraffectedemail' => 'christopher.abey@networkrail.co.uk',
+	]);
+```
+
+#### Adding Attachments To Resources
+
+Adding files to the resource to be created is as simple as calling the `withAttachments` method before `create`
+and passing in one or more `Illuminate\Http\UploadedFile` objects:
+
+```
+$fileOne = $request->fileOne;
+$fileTwo = $request->fileTwo;
+
+$response = MaximoQuery::withObjectStructure('trim')
+	->withAttachments($fileOne, $fileTwo)
+	->create([
+		...
+	]);
+
+```
+
+This will create the necessary structure for each file, extract the file name, base64 encode the content and append it to the data passed into the `create` method.
+
+#### Properties
+
+By default, the response from the `create` method will only return the `href` of the newly created resource. To retrieve additional data in the response, you can pass in an array of properties as the 2nd parameter of the `create` method:
+
+```
+$response = MaximoQuery::withObjectStructure('trim')
+	->withAttachments($fileOne, $fileTwo)
+	->create(
+		[...],
+		['href', 'ticketid', 'description']
+	);
+```
+
+### Updating Resources
+
+In order to update a resource in Maximo, you must first have the unique URL of the resource in question. By fluently constructing your query to contain one or more where clauses, the package will retrieve the resource url and then use it to make the update request:
+
+```
+$response = MaximoQuery::withObjectStructure('trim')
+	->where('ticketid', 'ABEY12345')
+	->update([
+		'description' => 'A new title',
+	]);
+```
+
+Like the `create` method, by default only the `href` of the resource is returned and additional data can be returned by passing in an array of properties as the 2nd parameter of the `update` method.
+
+**IMPORTANT**
+There are several instances where an exception will be thrown when using the `update` method:
+
+* If no where clause has been specifed
+* If more than one resource is returned
+* If no resources where found
+
+While attachments cannot be deleted via the API, they can be added while updating a resource using the `withAttachments` method described above.
+
+
 ### MaximoResponse Object
 
 All successful responses return a `MaximoResponse` object. The response object is immutable so all the methods below can be called without affecting the original object. 
 
-To get the raw json response simply call
+To get the raw `Illuminate\Http\Client\Response` object, simply call
 
 ```
-$json = $response->raw(); 
+$obj = $response->raw(); 
 ```
 
 The response can be converted into an array
@@ -234,13 +313,13 @@ $url = $response->getUrl();
 You can search the response recursively for a key and have it return the corresponding value:
 
 ```
-$value = $response->filter('rdfs:member');
+$value = $response->filter('member');
 ```
 
 You can also choose to return the filtered data as a `Illuminate\Support\Collection` by passing in the 2nd boolean parameter:
 
 ```
-$collection = $response->filter('rdfs:member', true);
+$collection = $response->filter('member', true);
 ```
 
 If the key cannot be found a `KeyNotFound` exception is thrown.
@@ -263,6 +342,18 @@ $pageThree = $pageTwo->nextPage();
 
 Calling either of these methods makes another http request and returns a new instance of the `MaximoResponse` object.
 
+### Upgrading To V2
+
+The response returned from Maximo is no longer namespaced i.e. `rdfs:member` to simplify and reduce the response payload. Simply removing the prefix is all that is needed for this change.
+
+The `raw` method of the `MaximoResponse` class now returns an instance of `Illuminate\Http\Client\Response` instead of a JSON string.
+
+A new `MaximoQuery` instance is returned when using the Facade rather than the cached singleton as with previous versions. This means calling `MaximoQuery::withObjectStructure('trim')` is the same as calling `(new MaximoQuery())->withObjectStructure('trim')`.
+
+
+
+
+
 ### Testing
 
 When utilising MaximoQuery in your tests, you can apply your expectations directly to the class instead of making your own mocks:
@@ -272,26 +363,9 @@ MaximoQuery::shouldReceive('withObjectStructure')
     -> andThrow(new InvalidResponse());
 ```
 
-``` bash
-composer test
-```
-
-### Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
-
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-### Security
-
-If you discover any security related issues, please email christopher.abey@networkrail.co.uk instead of using the issue tracker.
-
 ## Credits
 
 - [Christopher Abey](https://github.com/nrbusinesssystems)
-- [All Contributors](../../contributors)
 
 ## License
 

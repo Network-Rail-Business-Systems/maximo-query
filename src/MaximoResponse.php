@@ -2,86 +2,57 @@
 
 namespace Nrbusinesssystems\MaximoQuery;
 
-
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Collection;
 use Nrbusinesssystems\MaximoQuery\Exceptions\KeyNotFound;
 
 class MaximoResponse
 {
-    private string $rawResponse;
-
-    private string $queryUrl;
-
-
-    public function __construct(string $response, string $url)
-    {
-        $this->rawResponse = $response;
-
-        $this->queryUrl = $url;
-    }
+    public function __construct(
+        private Response $response,
+        private string $queryUrl
+    ){}
 
 
     /**
      * Returns the value of a given key in the response
      *
-     * @param $searchKey
-     * @param bool $toCollection
-     * @return Collection|mixed
      * @throws KeyNotFound
      */
-    public function filter($searchKey, $toCollection = true)
+    public function filter(string $searchKey, bool $toCollection = true): mixed
     {
         $results = $this->arraySearchRecursive($this->toArray(), $searchKey);
 
-        if ($toCollection) {
-            return collect($results);
-        }
-
-        return $results;
+        return $toCollection ? collect($results) : $results;
     }
 
-    /**
-     * Gets the total count from the response array
-     *
-     * @return int
-     */
+
+    /** Gets the total count from the response array */
     public function getCount(): int
     {
         try {
-            return $this->filter('oslc:totalCount', false);
+            return $this->filter(searchKey: 'totalCount', toCollection: false);
         } catch (KeyNotFound $e) {
             return 0;
         }
     }
 
 
-    /**
-     * Returns the raw json response
-     *
-     * @return string
-     */
-    public function raw(): string
+    /** Returns the raw response */
+    public function raw(): Response
     {
-        return $this->rawResponse;
+        return $this->response;
     }
 
 
-    /**
-     * Returns the response data as an associative array
-     *
-     * @return array
-     */
-    public function toArray():? array
+    /** Returns the response data as an associative array */
+    public function toArray(): array|null
     {
-        return json_decode($this->rawResponse, true);
+        return json_decode($this->response->body(), true);
     }
 
 
-    /**
-     * Returns the response data as a collection
-     *
-     * @return Collection
-     */
+    /** Returns the response data as a collection */
     public function toCollection(): Collection
     {
         return collect($this->toArray());
@@ -91,11 +62,10 @@ class MaximoResponse
     /**
      * Gets the next page of the paginated dataset
      *
-     * @return MaximoResponse|null
      * @throws Exceptions\CouldNotAuthenticate
      * @throws Exceptions\InvalidResponse
      */
-    public function nextPage()
+    public function nextPage(): MaximoResponse|null
     {
         return $this->getPage('nextPage');
     }
@@ -103,22 +73,16 @@ class MaximoResponse
 
     /**
      * Gets the previous page of the paginated dataset
-     *
-     * @return MaximoResponse|null
      * @throws Exceptions\CouldNotAuthenticate
      * @throws Exceptions\InvalidResponse
      */
-    public function prevPage()
+    public function prevPage(): MaximoResponse|null
     {
         return $this->getPage('previousPage');
     }
 
 
-    /**
-     * Returns the query URL
-     *
-     * @return string
-     */
+    /** Returns the query URL */
     public function getUrl(): string
     {
         return $this->queryUrl;
@@ -129,12 +93,9 @@ class MaximoResponse
      * Recursively searches an array for a given key
      * and returns it's value if found
      *
-     * @param $array
-     * @param $search
-     * @return mixed
      * @throws KeyNotFound
      */
-    private function arraySearchRecursive($array, $search)
+    private function arraySearchRecursive(array $array, string $search): mixed
     {
         $iterator = new \RecursiveArrayIterator($array);
 
@@ -151,23 +112,28 @@ class MaximoResponse
     /**
      * Gets the page specified by the $page parameter
      *
-     * @param string $page
-     * @return MaximoResponse|null
      * @throws Exceptions\CouldNotAuthenticate
      * @throws Exceptions\InvalidResponse
      */
-    private function getPage(string $page)
+    private function getPage(string $page): MaximoResponse|null
     {
         try {
-            $pageResource = $this->filter("oslc:{$page}", false);
+            $pageResource = $this->filter($page, false);
         } catch (KeyNotFound $e) {
             return null;
         }
 
-        $url = str_replace('http://localhost/maximo', config('maximo-query.maximo_url'), $pageResource['rdf:resource']);
+        $url = config('maximo-query.maximo_url') . '/' . $pageResource['href'];
+
+
 
         return (new MaximoHttp($url))
             ->get();
+    }
+
+    public function __toString(): string
+    {
+        return (string) $this->response;
     }
 
 }

@@ -2,8 +2,10 @@
 
 namespace Nrbusinesssystems\MaximoQuery;
 
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidQuery;
+use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidResponse;
 use Nrbusinesssystems\MaximoQuery\Traits\HasWhere;
 
 class MaximoQuery
@@ -15,8 +17,6 @@ class MaximoQuery
     private ?string $objectType = null;
 
     private ?string $queryObject = null;
-
-    private ?int $uniqueId = null;
 
     private ?int $pageSize = 1000;
 
@@ -30,13 +30,12 @@ class MaximoQuery
 
     private ?int $page = null;
 
+    private array $attachments = [];
+
 
     /**
      * Set the pagination for the results
      * Default page size is set to 1000
-     *
-     * @param int $pageSize
-     * @return $this
      */
     public function paginate(int $pageSize = 20): self
     {
@@ -49,8 +48,6 @@ class MaximoQuery
     /**
      * Remove all pagination
      * WARNING: This should be used with extreme caution!
-     *
-     * @return $this
      */
     public function withoutPagination(): self
     {
@@ -62,8 +59,6 @@ class MaximoQuery
 
     /**
      * Includes the query count with the response data
-     *
-     * @return $this
      */
     public function withCount(): self
     {
@@ -76,29 +71,25 @@ class MaximoQuery
     /**
      * Returns the query count
      *
-     * @return int|null
      * @throws Exceptions\CouldNotAuthenticate
      * @throws Exceptions\InvalidResponse
-     * @throws Exceptions\KeyNotFound
      * @throws InvalidQuery
      */
     public function count(): ?int
     {
         $this->count = true;
 
-        return $this->get()
+        return (new MaximoHttp(url: $this->getUrl()))
+            ->get()
             ->getCount();
     }
 
     /**
      * Will request that null values are filtered from the response
-     *
-     * @param bool $filterNullValues
-     * @return $this
      */
-    public function filterNullValues(bool $filterNullValues = true): self
+    public function filterNullValues(): self
     {
-        $this->dropNulls = $filterNullValues;
+        $this->dropNulls = true;
 
         return $this;
     }
@@ -107,9 +98,6 @@ class MaximoQuery
     /**
      * Sets the objectType to 'os'
      * and the queryObject to $objectStructure
-     *
-     * @param string $objectStructure
-     * @return $this
      */
     public function withObjectStructure(string $objectStructure): self
     {
@@ -123,9 +111,6 @@ class MaximoQuery
     /**
      * Sets the objectType to 'mbo'
      * and the queryObject to $businessObject
-     *
-     * @param string $businessObject
-     * @return $this
      */
     public function withBusinessObject(string $businessObject): self
     {
@@ -136,11 +121,7 @@ class MaximoQuery
     }
 
 
-    /**
-     * @param string|array $columns
-     * @return $this
-     */
-    public function select($columns): self
+    public function select(array|string $columns): self
     {
         $this->columns = Arr::wrap($columns);
 
@@ -148,9 +129,6 @@ class MaximoQuery
     }
 
 
-    /**
-     * @return $this
-     */
     public function selectAll(): self
     {
         $this->columns = ["*"];
@@ -159,12 +137,7 @@ class MaximoQuery
     }
 
 
-    /**
-     * @param string|array $column
-     * @param string $direction
-     * @return $this
-     */
-    public function orderBy($column, string $direction = 'desc'): self
+    public function orderBy(array|string $column, string $direction = 'desc'): self
     {
         if (is_array($column)) {
             $this->orderBy = array_map(function($array) {
@@ -188,17 +161,14 @@ class MaximoQuery
      * Retrieves a single record using it's
      * unique identifier
      *
-     * @param $id
-     * @return array
      * @throws Exceptions\CouldNotAuthenticate
      * @throws Exceptions\InvalidResponse
      * @throws InvalidQuery
      */
-    public function find($id): array
+    public function find(string $restId): null|array
     {
-        $this->uniqueId = $id;
-
-        return $this->get()
+        return (new MaximoHttp(url: $this->getUrl($restId)))
+            ->get()
             ->toArray();
     }
 
@@ -208,85 +178,132 @@ class MaximoQuery
      * which returns a new MaximoResponse
      *
      * @param int|null $page
-     * @return MaximoResponse
      * @throws Exceptions\CouldNotAuthenticate
      * @throws Exceptions\InvalidResponse
      * @throws InvalidQuery
      */
-    public function get(int $page = null)
+    public function get(int $page = null): MaximoResponse
     {
         $this->page = $page;
 
-        return (new MaximoHttp($this->getUrl()))
+        return (new MaximoHttp(url: $this->getUrl()))
             ->get();
     }
 
-
     /**
-     * Gets the url for the http request
-     *
-     * @return string
+     * @throws Exceptions\CouldNotAuthenticate
      * @throws InvalidQuery
+     * @throws Exceptions\InvalidResponse
      */
-    public function getUrl(): string
+    public function create(array $data, array $properties = []): MaximoResponse
     {
-        return $this->buildUrl();
+        $data = array_lowercase_keys(array: $data);
+        $properties = array_lowercase_values(array: $properties);
+
+        if (empty($this->attachments) === false) {
+            $data['doclinks'] = $this->attachments;
+        }
+
+        return (new MaximoHttp(url: $this->getUrl()))
+            ->post(data: $data, returnedProperties: $properties);
     }
 
-
-    /**
-     * Returns an array of query parameters for the url
-     * i.e. ?oslc.select=firstname,lastname....
-     *
-     * @return array
-     */
-    private function getQueryParameters(): array
+    public function withAttachments(UploadedFile ...$attachments): self
     {
-        if ($this->uniqueId) {
-            return [
-                $this->getSelect()
+        foreach($attachments as $attachment) {
+            $this->attachments[] = [
+                'urltype' => 'FILE',
+                'documentdata' => base64_encode($attachment->get()),
+                'doctype' => 'Attachments',
+                'urlname' => $attachment->getClientOriginalName(),
             ];
         }
 
-        if ($this->count) {
-            return [
-                $this->getWhere(),
-                "count=1"
-            ];
-        }
-
-        return [
-            $this->getSelect(),
-            $this->getWhere(),
-            $this->getOrderBy(),
-            $this->getPage(),
-            $this->getPageSize(),
-            $this->getDropNulls(),
-            $this->getCollectionCount()
-        ];
+        return $this;
     }
 
+    /**
+     * @throws Exceptions\CouldNotAuthenticate
+     * @throws InvalidQuery
+     * @throws Exceptions\InvalidResponse
+     * @throws Exceptions\KeyNotFound
+     */
+    public function update(array $data, array $properties = []): MaximoResponse
+    {
+        $url = $this->getResourceUrl();
+
+        $data = array_lowercase_keys(array: $data);
+        $properties = array_lowercase_values(array: $properties);
+
+        if (empty($this->attachments) === false) {
+            $data['doclinks'] = $this->attachments;
+        }
+
+        return (new MaximoHttp(url: $url))
+            ->patch(data: $data, returnedProperties: $properties);
+    }
 
     /**
-     * Builds the url from the various parameters set
-     * during the construction of the query object
-     *
-     * @return string
+     * @throws InvalidQuery
+     * @throws Exceptions\CouldNotAuthenticate
+     * @throws Exceptions\KeyNotFound
+     * @throws Exceptions\InvalidResponse
+     */
+    private function getResourceUrl(): string
+    {
+        $where = $this->getWhere();
+
+        if (is_null($where)) {
+            throw InvalidQuery::noWhereClause();
+        }
+
+        //force the minimum pagination to check for a single resource
+        $this->paginate(2);
+
+        $resource = (new MaximoHttp(url: $this->getUrl()))
+            ->get()
+            ->filter('member')
+            ->pluck('href');
+
+        if ($resource->isEmpty()) {
+            throw InvalidResponse::resourceNotFound();
+        }
+
+        if ($resource->count() > 1) {
+            throw InvalidResponse::multipleResourcesFound();
+        }
+
+        return config('maximo-query.maximo_url') . '/' . $resource->first();
+    }
+
+    /**
      * @throws InvalidQuery
      */
-    private function buildUrl(): string
+    private function getBaseUrl(): string
     {
         if (!$this->objectType) {
             throw InvalidQuery::objectTypeNotSet();
         }
 
-        $baseurl = config('maximo-query.maximo_url');
+        $url = config('maximo-query.maximo_url');
 
-        $params = collect($this->getQueryParameters())
-            ->filter()
-            ->implode('&');
+        return "{$url}/oslc/{$this->objectType}/{$this->queryObject}";
+    }
 
-        return "{$baseurl}/oslc/{$this->objectType}/{$this->queryObject}{$this->getUniqueId()}?{$params}";
+    /**
+     * @throws InvalidQuery
+     */
+    public function getUrl(...$pathParameters): string
+    {
+        $queryString = $this->getQueryString();
+        $baseUrl = $this->getBaseUrl();
+        $path = collect($pathParameters)
+            ->whenNotEmpty(
+                fn ($collection) => '/' . $collection->implode('/'),
+                fn () => ''
+            );
+
+        return "{$baseUrl}{$path}?{$queryString}";
     }
 
 
@@ -324,33 +341,29 @@ class MaximoQuery
         return "oslc.pageSize={$this->pageSize}";
     }
 
-
     /**
-     * Generates the uniqueId portion of the url
-     * if the find() method has been called
+     * Generates the count portion of the query string
+     * if count method has been called
      *
      * @return string|void
      */
-    private function getUniqueId()
+    private function getCount()
     {
-        if (blank($this->uniqueId)) {
+        if ($this->count === false) {
             return;
         }
 
-        return "/{$this->uniqueId}";
+        return 'count=1';
     }
 
 
     /**
      * Generates the orderBy portion of the url
-     * if the orderBy method has been called
-     *
-     * @return string|void
      */
-    private function getOrderBy()
+    private function getOrderBy(): string|null
     {
         if (blank($this->orderBy)) {
-            return;
+            return null;
         }
 
         $imploded = collect($this->orderBy)
@@ -362,14 +375,11 @@ class MaximoQuery
 
     /**
      * Generates the collectioncount portion of the query string
-     * if withCount() has been called
-     *
-     * @return string|void
      */
-    private function getCollectionCount()
+    private function getCollectionCount(): string|null
     {
-        if (!$this->collectionCount) {
-            return;
+        if ($this->collectionCount === false) {
+            return null;
         }
 
         return "collectioncount=1";
@@ -378,29 +388,52 @@ class MaximoQuery
 
     /**
      * Generates the dropnulls portion of the query string
-     *
-     * @return string|void
      */
-    private function getDropNulls()
+    private function getDropNulls(): string|null
     {
-        $dropNulls = (int) $this->dropNulls;
+        //The default implementation of the api will filter all properties with null values
+        if ($this->dropNulls === true) {
+            return null;
+        }
 
-        return "_dropnulls={$dropNulls}";
+        return '_dropnulls=0';
     }
 
 
     /**
      * Generates the pageno portion of the query string
-     *
-     * @return string|void
      */
-    private function getPage()
+    private function getPage(): string|null
     {
-        if (!$this->page) {
-            return;
+        if (is_null($this->page)) {
+            return null;
         }
 
         return "pageno={$this->page}";
     }
 
+    private function getDefaultParameters(): string
+    {
+        return 'lean=1&relativeuri=1';
+    }
+
+    private function getQueryString(): string
+    {
+        $parameters = [
+            $this->getDefaultParameters(),
+            $this->getSelect(),
+            $this->getWhere(),
+            $this->getOrderBy(),
+            $this->getPage(),
+            $this->getPageSize(),
+            $this->getDropNulls(),
+            $this->getCollectionCount(),
+            $this->getCount(),
+        ];
+
+        return collect($parameters)
+            ->flatten()
+            ->filter()
+            ->implode('&');
+    }
 }
