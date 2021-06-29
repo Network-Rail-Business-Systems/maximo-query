@@ -19,7 +19,6 @@ trait HasWhere
      * @param $column
      * @param $search
      * @param $value
-     * @return $this
      * @throws InvalidQuery
      */
     public function where($column, $operator = null, $value = null): self
@@ -44,7 +43,6 @@ trait HasWhere
     /**
      * @param $column
      * @param $value
-     * @return $this
      */
     public function whereIn($column, $value): self
     {
@@ -62,7 +60,6 @@ trait HasWhere
     /**
      * @param $column
      * @param $value
-     * @return $this
      */
     public function whereNotIn($column, $value): self
     {
@@ -78,7 +75,6 @@ trait HasWhere
     /**
      * @param $column
      * @param $search
-     * @return $this
      */
     public function whereStartsWith($column, $search): self
     {
@@ -91,7 +87,6 @@ trait HasWhere
     /**
      * @param $column
      * @param $search
-     * @return $this
      */
     public function whereEndsWith($column, $search): self
     {
@@ -104,7 +99,6 @@ trait HasWhere
     /**
      * @param $column
      * @param $search
-     * @return $this
      */
     public function whereLike($column, $search): self
     {
@@ -128,7 +122,6 @@ trait HasWhere
 
     /**
      * @param $column
-     * @return $this
      */
     public function whereNotNull($column): static
     {
@@ -156,7 +149,6 @@ trait HasWhere
      * Used in the construction of the where clause.
      *
      * @param $value
-     * @return int|string
      */
     private function quoteString($value): int|string
     {

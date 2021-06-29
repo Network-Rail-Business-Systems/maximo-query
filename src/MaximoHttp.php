@@ -25,12 +25,9 @@ class MaximoHttp
 
     private array $options = [];
 
-    private Request|null $request;
-
 
     /**
      * MaximoHttp constructor.
-     * @param string $url
      */
     public function __construct(
         private string $url
@@ -73,7 +70,6 @@ class MaximoHttp
      * Makes a GET request to Maximo using the url
      * constructed by the query builder
      *
-     * @return MaximoResponse
      * @throws CouldNotAuthenticate
      * @throws InvalidResponse
      */

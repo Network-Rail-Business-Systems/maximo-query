@@ -2,6 +2,7 @@
 
 namespace Nrbusinesssystems\MaximoQuery;
 
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidQuery;
 use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidResponse;
@@ -29,15 +30,12 @@ class MaximoQuery
 
     private ?int $page = null;
 
-    private ?string $url = null;
+    private array $attachments = [];
 
 
     /**
      * Set the pagination for the results
      * Default page size is set to 1000
-     *
-     * @param int $pageSize
-     * @return $this
      */
     public function paginate(int $pageSize = 20): self
     {
@@ -50,8 +48,6 @@ class MaximoQuery
     /**
      * Remove all pagination
      * WARNING: This should be used with extreme caution!
-     *
-     * @return $this
      */
     public function withoutPagination(): self
     {
@@ -63,8 +59,6 @@ class MaximoQuery
 
     /**
      * Includes the query count with the response data
-     *
-     * @return $this
      */
     public function withCount(): self
     {
@@ -77,7 +71,6 @@ class MaximoQuery
     /**
      * Returns the query count
      *
-     * @return int|null
      * @throws Exceptions\CouldNotAuthenticate
      * @throws Exceptions\InvalidResponse
      * @throws InvalidQuery
@@ -93,8 +86,6 @@ class MaximoQuery
 
     /**
      * Will request that null values are filtered from the response
-     *
-     * @return $this
      */
     public function filterNullValues(): self
     {
@@ -107,9 +98,6 @@ class MaximoQuery
     /**
      * Sets the objectType to 'os'
      * and the queryObject to $objectStructure
-     *
-     * @param string $objectStructure
-     * @return $this
      */
     public function withObjectStructure(string $objectStructure): self
     {
@@ -123,9 +111,6 @@ class MaximoQuery
     /**
      * Sets the objectType to 'mbo'
      * and the queryObject to $businessObject
-     *
-     * @param string $businessObject
-     * @return $this
      */
     public function withBusinessObject(string $businessObject): self
     {
@@ -136,10 +121,6 @@ class MaximoQuery
     }
 
 
-    /**
-     * @param array|string $columns
-     * @return $this
-     */
     public function select(array|string $columns): self
     {
         $this->columns = Arr::wrap($columns);
@@ -148,9 +129,6 @@ class MaximoQuery
     }
 
 
-    /**
-     * @return $this
-     */
     public function selectAll(): self
     {
         $this->columns = ["*"];
@@ -159,11 +137,6 @@ class MaximoQuery
     }
 
 
-    /**
-     * @param array|string $column
-     * @param string $direction
-     * @return $this
-     */
     public function orderBy(array|string $column, string $direction = 'desc'): self
     {
         if (is_array($column)) {
@@ -188,8 +161,6 @@ class MaximoQuery
      * Retrieves a single record using it's
      * unique identifier
      *
-     * @param string $restId
-     * @return array|null
      * @throws Exceptions\CouldNotAuthenticate
      * @throws Exceptions\InvalidResponse
      * @throws InvalidQuery
@@ -207,7 +178,6 @@ class MaximoQuery
      * which returns a new MaximoResponse
      *
      * @param int|null $page
-     * @return MaximoResponse
      * @throws Exceptions\CouldNotAuthenticate
      * @throws Exceptions\InvalidResponse
      * @throws InvalidQuery
@@ -230,30 +200,26 @@ class MaximoQuery
         $data = array_lowercase_keys(array: $data);
         $properties = array_lowercase_values(array: $properties);
 
-        //separates the attachments from the rest of the data
-        //attachments can only be sent after the creation of the resource
-        $attachments = $this->splitAttachments($data);
-
-        $returnedProperties = empty($attachments) ? $properties : ['href'];
-
-        $newResource = (new MaximoHttp(url: $this->getUrl()))
-            ->post(data: $data, returnedProperties: $returnedProperties);
-
-        if (empty($attachments) === true) {
-            return $newResource;
+        if (empty($this->attachments) === false) {
+            $data['doclinks'] = $this->attachments;
         }
 
-        $attachmentsUrl = config('maximo-query.maximo_url') . '/' . $newResource->filter('href') . '/doclinks';
-
-        return (new MaximoHttp(url: $attachmentsUrl))
-            ->post(data: $attachments, returnedProperties: $properties);
+        return (new MaximoHttp(url: $this->getUrl()))
+            ->post(data: $data, returnedProperties: $properties);
     }
 
-    private function splitAttachments(array &$dataArray)
+    public function withAttachments(UploadedFile ...$attachments): self
     {
-        $attachments = $dataArray['doclinks'] ?? [];
-        unset($dataArray['doclinks']);
-        return $attachments;
+        foreach($attachments as $attachment) {
+            $this->attachments[] = [
+                'urltype' => 'FILE',
+                'documentdata' => base64_encode($attachment->get()),
+                'doctype' => 'Attachments',
+                'urlname' => $attachment->getClientOriginalName(),
+            ];
+        }
+
+        return $this;
     }
 
     /**
@@ -268,6 +234,10 @@ class MaximoQuery
 
         $data = array_lowercase_keys(array: $data);
         $properties = array_lowercase_values(array: $properties);
+
+        if (empty($this->attachments) === false) {
+            $data['doclinks'] = $this->attachments;
+        }
 
         return (new MaximoHttp(url: $url))
             ->patch(data: $data, returnedProperties: $properties);

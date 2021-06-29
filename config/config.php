@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'maximo_url' => env('MAXIMO_URL', 'http://localhost'),
+    'maximo_url' => env('MAXIMO_URL', 'http://localhost/maximo'),
 
     'cookie_cache_key' => env('MAXIMO_KEY', 'maximo-query:cookies'),
 
