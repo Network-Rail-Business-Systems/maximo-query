@@ -4,6 +4,7 @@ namespace Nrbusinesssystems\MaximoQuery;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
 use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidQuery;
 use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidResponse;
 use Nrbusinesssystems\MaximoQuery\Traits\HasWhere;
@@ -208,16 +209,30 @@ class MaximoQuery
             ->post(data: $data, returnedProperties: $properties);
     }
 
-    public function withAttachments(UploadedFile ...$attachments): self
+    public function withUploadedFiles(UploadedFile ...$uploadedFiles): self
     {
-        foreach($attachments as $attachment) {
+        foreach($uploadedFiles as $uploadedFile) {
             $this->attachments[] = [
                 'urltype' => 'FILE',
-                'documentdata' => base64_encode($attachment->get()),
+                'documentdata' => base64_encode($uploadedFile->get()),
                 'doctype' => 'Attachments',
-                'urlname' => $attachment->getClientOriginalName(),
+                'urlname' => $uploadedFile->getClientOriginalName(),
             ];
         }
+
+        return $this;
+    }
+
+    public function withAttachment(string $filepath, string $name, string $disk = 'local'): self
+    {
+        $file = Storage::disk($disk)->get($filepath);
+
+        $this->attachments[] = [
+            'urltype' => 'FILE',
+            'documentdata' => base64_encode($file),
+            'doctype' => 'Attachments',
+            'urlname' => $name
+        ];
 
         return $this;
     }
