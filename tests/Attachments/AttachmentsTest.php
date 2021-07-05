@@ -2,21 +2,77 @@
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Nrbusinesssystems\MaximoQuery\Facades\MaximoQuery;
 
-test('can fluently add attachments', function() {
+beforeEach(function () {
     $this->fakeLogin();
 
-    $fileContent = file_get_contents(__DIR__ . '/../stubs/potatoes.jpg');
+    $this->fileContent = file_get_contents(__DIR__ . '/../stubs/potatoes.jpg');
+});
 
-    $file = UploadedFile::fake()->createWithContent('potatoes.jpg', $fileContent);
+test('can add attachments from an uploaded file when creating resources', function() {
+    $file = UploadedFile::fake()->createWithContent('potatoes.jpg', $this->fileContent);
 
     Http::fake();
 
     MaximoQuery::withObjectStructure('test')
-        ->withAttachments($file)
+        ->withUploadedFiles($file)
         ->create([]);
 
+    assertExpectedPayload($this->fileContent);
+});
+
+test('can add attachments from an uploaded file when updating resources', function() {
+    $file = UploadedFile::fake()->createWithContent('potatoes.jpg', $this->fileContent);
+
+    Http::fake([
+        '*/oslc/os/trim*' => Http::response(include(__DIR__ . '/../stubs/responses/single-record.php')),
+        '*/oslc/os/mxperson*' => Http::response(include(__DIR__ . '/../stubs/responses/update-no-properties.php')),
+    ]);
+
+    MaximoQuery::withObjectStructure('trim')
+        ->where('food', 'potato')
+        ->withUploadedFiles($file)
+        ->update([]);
+
+    assertExpectedPayload($this->fileContent);
+});
+
+
+test('can add attachments from storage path when creating resources', function() {
+    Storage::fake('attachments')
+        ->put('potatoes.jpg', $this->fileContent);
+
+    Http::fake();
+
+    MaximoQuery::withObjectStructure('test')
+        ->withAttachment('potatoes.jpg', 'potatoes.jpg', 'attachments')
+        ->create([]);
+
+    assertExpectedPayload($this->fileContent);
+});
+
+test('can add attachments from storage path when updating resources', function() {
+    Storage::fake('attachments')
+        ->put('potatoes.jpg', $this->fileContent);
+
+    Http::fake([
+        '*/oslc/os/trim*' => Http::response(include(__DIR__ . '/../stubs/responses/single-record.php')),
+        '*/oslc/os/mxperson*' => Http::response(include(__DIR__ . '/../stubs/responses/update-no-properties.php')),
+    ]);
+
+    MaximoQuery::withObjectStructure('trim')
+        ->where('food', 'potato')
+        ->withAttachment('potatoes.jpg', 'potatoes.jpg', 'attachments')
+        ->update([]);
+
+    assertExpectedPayload($this->fileContent);
+});
+
+
+function assertExpectedPayload($fileContent)
+{
     $expected = [
         'urltype' => 'FILE',
         'documentdata' => base64_encode($fileContent),
@@ -30,4 +86,4 @@ test('can fluently add attachments', function() {
         return key_exists('doclinks', $data) &&
             $data['doclinks'][0] === $expected;
     });
-});
+}
