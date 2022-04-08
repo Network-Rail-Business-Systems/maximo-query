@@ -30,6 +30,6 @@ test('filter method throws an exception if the key cannot be found', function ()
         ->get()
         ->filter('unknown key');
 })->throws(
-    exceptionClass: KeyNotFound::class,
+    exception: KeyNotFound::class,
     exceptionMessage: "The specified key, 'unknown key' could not be found in the response data."
 );
