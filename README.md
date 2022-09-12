@@ -220,8 +220,8 @@ $response = MaximoQuery::withObjectStructure('trim')
 		'description' => 'Some Title',
 		'description_longdescription' => 'Some description',
 		'reportdate' => Carbon::Now()->format('Y-m-d\TH:i:s+00:00'),
-		'nraffectedperson' => 'Christopher Abey',
-		'nraffectedemail' => 'christopher.abey@networkrail.co.uk',
+		'nraffectedperson' => 'Jon Doe',
+		'nraffectedemail' => 'jon.doe@networkrail.co.uk',
 	]);
 ```
 
@@ -263,7 +263,7 @@ In order to update a resource in Maximo, you must first have the unique URL of t
 
 ```
 $response = MaximoQuery::withObjectStructure('trim')
-	->where('ticketid', 'ABEY12345')
+	->where('ticketid', 'DOE12345')
 	->update([
 		'description' => 'A new title',
 	]);
@@ -350,10 +350,6 @@ The `raw` method of the `MaximoResponse` class now returns an instance of `Illum
 
 A new `MaximoQuery` instance is returned when using the Facade rather than the cached singleton as with previous versions. This means calling `MaximoQuery::withObjectStructure('trim')` is the same as calling `(new MaximoQuery())->withObjectStructure('trim')`.
 
-
-
-
-
 ### Testing
 
 When utilising MaximoQuery in your tests, you can apply your expectations directly to the class instead of making your own mocks:
@@ -365,7 +361,7 @@ MaximoQuery::shouldReceive('withObjectStructure')
 
 ## Credits
 
-- [Christopher Abey](https://github.com/nrbusinesssystems)
+- [Christopher Abey](https://github.com/chrisabey84)
 
 ## License
 
