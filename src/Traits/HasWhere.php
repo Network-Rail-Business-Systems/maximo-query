@@ -1,10 +1,10 @@
 <?php
 
-namespace Nrbusinesssystems\MaximoQuery\Traits;
+namespace Networkrailbusinesssystems\MaximoQuery\Traits;
 
 
 use Illuminate\Support\Arr;
-use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidQuery;
+use Networkrailbusinesssystems\MaximoQuery\Exceptions\InvalidQuery;
 
 trait HasWhere
 {

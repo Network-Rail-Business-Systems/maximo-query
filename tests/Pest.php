@@ -1,6 +1,6 @@
 <?php
 
-use Nrbusinesssystems\MaximoQuery\Tests\TestCase;
+use Networkrailbusinesssystems\MaximoQuery\Tests\TestCase;
 
 uses(TestCase::class)
     ->in(__DIR__);

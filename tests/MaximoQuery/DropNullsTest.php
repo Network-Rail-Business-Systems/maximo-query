@@ -1,6 +1,6 @@
 <?php
 
-use Nrbusinesssystems\MaximoQuery\Facades\MaximoQuery;
+use Networkrailbusinesssystems\MaximoQuery\Facades\MaximoQuery;
 
 it('does not drop null values by default', function() {
     $url = MaximoQuery::withObjectStructure('mxperson')

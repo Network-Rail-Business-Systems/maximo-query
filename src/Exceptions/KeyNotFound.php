@@ -1,6 +1,6 @@
 <?php
 
-namespace Nrbusinesssystems\MaximoQuery\Exceptions;
+namespace Networkrailbusinesssystems\MaximoQuery\Exceptions;
 
 use Exception;
 use JetBrains\PhpStorm\Pure;

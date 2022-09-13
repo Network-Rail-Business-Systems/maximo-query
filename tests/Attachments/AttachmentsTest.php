@@ -3,7 +3,7 @@
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
-use Nrbusinesssystems\MaximoQuery\Facades\MaximoQuery;
+use Networkrailbusinesssystems\MaximoQuery\Facades\MaximoQuery;
 
 beforeEach(function () {
     $this->fakeLogin();

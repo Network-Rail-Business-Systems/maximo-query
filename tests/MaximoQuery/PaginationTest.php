@@ -1,6 +1,6 @@
 <?php
 
-use Nrbusinesssystems\MaximoQuery\Facades\MaximoQuery;
+use Networkrailbusinesssystems\MaximoQuery\Facades\MaximoQuery;
 
 it('has a default pagination', function() {
     $url = MaximoQuery::withObjectStructure('mxperson')

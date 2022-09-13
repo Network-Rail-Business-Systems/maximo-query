@@ -1,13 +1,13 @@
 <?php
 
-namespace Nrbusinesssystems\MaximoQuery;
+namespace Networkrailbusinesssystems\MaximoQuery;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
-use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidQuery;
-use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidResponse;
-use Nrbusinesssystems\MaximoQuery\Traits\HasWhere;
+use Networkrailbusinesssystems\MaximoQuery\Exceptions\InvalidQuery;
+use Networkrailbusinesssystems\MaximoQuery\Exceptions\InvalidResponse;
+use Networkrailbusinesssystems\MaximoQuery\Traits\HasWhere;
 
 class MaximoQuery
 {

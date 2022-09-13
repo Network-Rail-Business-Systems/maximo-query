@@ -1,6 +1,6 @@
 <?php
 
-use Nrbusinesssystems\MaximoQuery\Facades\MaximoQuery;
+use Networkrailbusinesssystems\MaximoQuery\Facades\MaximoQuery;
 
 it('can order by a single column', function() {
     $url = MaximoQuery::withObjectStructure('mxperson')

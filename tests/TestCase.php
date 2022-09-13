@@ -1,10 +1,10 @@
 <?php
 
-namespace Nrbusinesssystems\MaximoQuery\Tests;
+namespace Networkrailbusinesssystems\MaximoQuery\Tests;
 
 use GuzzleHttp\Cookie\CookieJar;
 use Illuminate\Support\Facades\Cache;
-use Nrbusinesssystems\MaximoQuery\Providers\MaximoQueryServiceProvider;
+use Networkrailbusinesssystems\MaximoQuery\Providers\MaximoQueryServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra

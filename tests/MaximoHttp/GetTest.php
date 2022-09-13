@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Http;
-use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidResponse;
-use Nrbusinesssystems\MaximoQuery\Facades\MaximoQuery;
+use Networkrailbusinesssystems\MaximoQuery\Exceptions\InvalidResponse;
+use Networkrailbusinesssystems\MaximoQuery\Facades\MaximoQuery;
 
 beforeEach(function () {
     $this->fakeLogin();

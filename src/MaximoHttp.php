@@ -1,15 +1,15 @@
 <?php
 
-namespace Nrbusinesssystems\MaximoQuery;
+namespace Networkrailbusinesssystems\MaximoQuery;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Nrbusinesssystems\MaximoQuery\Exceptions\CouldNotAuthenticate;
-use Nrbusinesssystems\MaximoQuery\Exceptions\Debug;
-use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidResponse;
+use Networkrailbusinesssystems\MaximoQuery\Exceptions\CouldNotAuthenticate;
+use Networkrailbusinesssystems\MaximoQuery\Exceptions\Debug;
+use Networkrailbusinesssystems\MaximoQuery\Exceptions\InvalidResponse;
 
 class MaximoHttp
 {

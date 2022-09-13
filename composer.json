@@ -1,11 +1,13 @@
 {
-    "name": "nrbusinesssystems/maximo-query",
-    "description": "Easily retrieve data from Maximo using the REST API",
+    "name": "network-rail-business-systems/maximo-query",
+    "description": "A Laravel package to easily retrieve data from Maximo using the REST API",
     "keywords": [
-        "nrbusinesssystems",
+        "network rail",
+        "laravel",
+        "maximo",
         "maximo-query"
     ],
-    "homepage": "https://github.com/nrbusinesssystems/maximo-query",
+    "homepage": "https://github.com/Network-Rail-Business-Systems/maximo-query",
     "license": "MIT",
     "type": "library",
     "authors": [
@@ -25,12 +27,12 @@
             "src/helpers.php"
         ],
         "psr-4": {
-            "Nrbusinesssystems\\MaximoQuery\\": "src"
+            "Networkrailbusinesssystems\\MaximoQuery\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Nrbusinesssystems\\MaximoQuery\\Tests\\": "tests"
+            "Networkrailbusinesssystems\\MaximoQuery\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -41,15 +43,18 @@
         "sort-packages": true,
         "platform": {
             "php": "8.0.6"
+        },
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Nrbusinesssystems\\MaximoQuery\\Providers\\MaximoQueryServiceProvider"
+                "Networkrailbusinesssystems\\MaximoQuery\\Providers\\MaximoQueryServiceProvider"
             ],
             "aliases": {
-                "MaximoQuery": "Nrbusinesssystems\\MaximoQuery\\Facades\\MaximoQuery"
+                "MaximoQuery": "Networkrailbusinesssystems\\MaximoQuery\\Facades\\MaximoQuery"
             }
         }
     },

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Nrbusinesssystems\MaximoQuery\Exceptions;
+namespace Networkrailbusinesssystems\MaximoQuery\Exceptions;
 
 use Exception;
 use Illuminate\Http\Client\Response;

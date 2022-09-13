@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Http;
-use Nrbusinesssystems\MaximoQuery\Facades\MaximoQuery;
-use Nrbusinesssystems\MaximoQuery\MaximoResponse;
+use Networkrailbusinesssystems\MaximoQuery\Facades\MaximoQuery;
+use Networkrailbusinesssystems\MaximoQuery\MaximoResponse;
 
 test('the get method returns a maximo response object', function() {
    $this->fakeLogin();

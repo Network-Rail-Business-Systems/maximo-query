@@ -1,7 +1,7 @@
 <?php
 
-use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidQuery;
-use Nrbusinesssystems\MaximoQuery\Facades\MaximoQuery;
+use Networkrailbusinesssystems\MaximoQuery\Exceptions\InvalidQuery;
+use Networkrailbusinesssystems\MaximoQuery\Facades\MaximoQuery;
 
 it('throws an exception if object type is not set', function() {
     $this->expectException(InvalidQuery::class);

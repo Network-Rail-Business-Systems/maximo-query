@@ -1,10 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Http;
-use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidQuery;
-use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidResponse;
-use Nrbusinesssystems\MaximoQuery\Facades\MaximoQuery;
-use Nrbusinesssystems\MaximoQuery\MaximoResponse;
+use Networkrailbusinesssystems\MaximoQuery\Exceptions\InvalidQuery;
+use Networkrailbusinesssystems\MaximoQuery\Exceptions\InvalidResponse;
+use Networkrailbusinesssystems\MaximoQuery\Facades\MaximoQuery;
+use Networkrailbusinesssystems\MaximoQuery\MaximoResponse;
 
 it('will throw an exception if there is no where clause', function() {
     MaximoQuery::withObjectStructure('trim')
