@@ -2,8 +2,8 @@
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
-use Networkrailbusinesssystems\MaximoQuery\Exceptions\KeyNotFound;
-use Networkrailbusinesssystems\MaximoQuery\Facades\MaximoQuery;
+use NetworkRailBusinessSystems\MaximoQuery\Exceptions\KeyNotFound;
+use NetworkRailBusinessSystems\MaximoQuery\Facades\MaximoQuery;
 
 beforeEach(function () {
     $this->fakeLogin();

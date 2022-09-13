@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Networkrailbusinesssystems\MaximoQuery\Tests;
+namespace NetworkRailBusinessSystems\MaximoQuery\Tests;
 
-use Networkrailbusinesssystems\MaximoQuery\Exceptions\InvalidQuery;
-use Networkrailbusinesssystems\MaximoQuery\Facades\MaximoQuery;
+use NetworkRailBusinessSystems\MaximoQuery\Exceptions\InvalidQuery;
+use NetworkRailBusinessSystems\MaximoQuery\Facades\MaximoQuery;
 
 test('passing an invalid operator to where throws an exception', function(string $operator, bool $expectException) {
     if ($expectException) {

@@ -5,8 +5,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use Networkrailbusinesssystems\MaximoQuery\Exceptions\CouldNotAuthenticate;
-use Networkrailbusinesssystems\MaximoQuery\Facades\MaximoQuery;
+use NetworkRailBusinessSystems\MaximoQuery\Exceptions\CouldNotAuthenticate;
+use NetworkRailBusinessSystems\MaximoQuery\Facades\MaximoQuery;
 
 it('authenticates if cookies are not cached', function() {
     $this->clearCookies();

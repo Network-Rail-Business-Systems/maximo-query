@@ -17,7 +17,7 @@ composer require network-rail-business-systems/maximo-query
 Publish the config file and configure the `maximo_url`, `maximo_username` and `maximo_password` parameters.
 
 ```bash
-php artisan vendor:publish --provider="Networkrailbusinesssystems\MaximoQuery\Providers\MaximoQueryServiceProvider" --tag="config"
+php artisan vendor:publish --provider="NetworkRailBusinessSystems\MaximoQuery\Providers\MaximoQueryServiceProvider" --tag="config"
 ```
 
 ## Usage

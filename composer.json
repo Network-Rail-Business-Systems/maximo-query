@@ -27,12 +27,12 @@
             "src/helpers.php"
         ],
         "psr-4": {
-            "Networkrailbusinesssystems\\MaximoQuery\\": "src"
+            "NetworkRailBusinessSystems\\MaximoQuery\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Networkrailbusinesssystems\\MaximoQuery\\Tests\\": "tests"
+            "NetworkRailBusinessSystems\\MaximoQuery\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -51,10 +51,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Networkrailbusinesssystems\\MaximoQuery\\Providers\\MaximoQueryServiceProvider"
+                "NetworkRailBusinessSystems\\MaximoQuery\\Providers\\MaximoQueryServiceProvider"
             ],
             "aliases": {
-                "MaximoQuery": "Networkrailbusinesssystems\\MaximoQuery\\Facades\\MaximoQuery"
+                "MaximoQuery": "NetworkRailBusinessSystems\\MaximoQuery\\Facades\\MaximoQuery"
             }
         }
     },

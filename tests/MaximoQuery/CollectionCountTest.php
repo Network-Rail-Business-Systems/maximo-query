@@ -1,6 +1,6 @@
 <?php
 
-use Networkrailbusinesssystems\MaximoQuery\Facades\MaximoQuery;
+use NetworkRailBusinessSystems\MaximoQuery\Facades\MaximoQuery;
 
 it('will not request collection count by default', function() {
     $url = MaximoQuery::withObjectStructure('mxperson')

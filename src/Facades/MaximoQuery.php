@@ -1,13 +1,13 @@
 <?php
 
-namespace Networkrailbusinesssystems\MaximoQuery\Facades;
+namespace NetworkRailBusinessSystems\MaximoQuery\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
 
 /**
- * @method static \Networkrailbusinesssystems\MaximoQuery\MaximoQuery withObjectStructure(string $objectStructure)
- * @method static \Networkrailbusinesssystems\MaximoQuery\MaximoQuery withBusinessObject(string $businessObject)
+ * @method static \NetworkRailBusinessSystems\MaximoQuery\MaximoQuery withObjectStructure(string $objectStructure)
+ * @method static \NetworkRailBusinessSystems\MaximoQuery\MaximoQuery withBusinessObject(string $businessObject)
  *
  */
 class MaximoQuery extends Facade
