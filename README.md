@@ -1,6 +1,6 @@
 # Maximo Query
 
-This package enables you to request and retrieve and update data from Maximo using a custom query builder.
+This package enables you to retrieve and update data from Maximo using a custom query builder.
 
 **IMPORTANT**: v2 of the package has breaking changes and should not be used in existing projects without taking the necessary refactoring into account. Please see the upgrade section for more information.
 
