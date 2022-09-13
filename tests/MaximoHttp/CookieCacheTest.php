@@ -4,7 +4,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
-use Nrbusinesssystems\MaximoQuery\Facades\MaximoQuery;
+use NetworkRailBusinessSystems\MaximoQuery\Facades\MaximoQuery;
 
 test('cookies are only stored in the cache for the duration of the cache lifetime', function () {
     Config::set('maximo-query.cache_ttl_minutes', 60);

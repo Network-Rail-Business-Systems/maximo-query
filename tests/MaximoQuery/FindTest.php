@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Http;
-use Nrbusinesssystems\MaximoQuery\Facades\MaximoQuery;
+use NetworkRailBusinessSystems\MaximoQuery\Facades\MaximoQuery;
 
 test('the find method returns a single record as an array', function() {
     $this->fakeLogin();

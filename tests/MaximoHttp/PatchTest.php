@@ -2,8 +2,8 @@
 
 
 use Illuminate\Support\Facades\Http;
-use Nrbusinesssystems\MaximoQuery\Exceptions\InvalidResponse;
-use Nrbusinesssystems\MaximoQuery\Facades\MaximoQuery;
+use NetworkRailBusinessSystems\MaximoQuery\Exceptions\InvalidResponse;
+use NetworkRailBusinessSystems\MaximoQuery\Facades\MaximoQuery;
 
 beforeEach(function () {
     $this->fakeLogin();

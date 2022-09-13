@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Http;
-use Nrbusinesssystems\MaximoQuery\Facades\MaximoQuery;
+use NetworkRailBusinessSystems\MaximoQuery\Facades\MaximoQuery;
 
 test('count method returns an integer', function() {
     $this->fakeLogin();
