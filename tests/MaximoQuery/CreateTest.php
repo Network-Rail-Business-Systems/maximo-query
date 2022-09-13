@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Http;
-use Nrbusinesssystems\MaximoQuery\Facades\MaximoQuery;
-use Nrbusinesssystems\MaximoQuery\MaximoResponse;
+use NetworkRailBusinessSystems\MaximoQuery\Facades\MaximoQuery;
+use NetworkRailBusinessSystems\MaximoQuery\MaximoResponse;
 
 
 

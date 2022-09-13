@@ -1,25 +1,15 @@
 # Maximo Query
 
-This package enables you to request and retrieve data from Maximo using a custom query builder.
+This package enables you to retrieve and update data from Maximo using a custom query builder.
 
 **IMPORTANT**: v2 of the package has breaking changes and should not be used in existing projects without taking the necessary refactoring into account. Please see the upgrade section for more information.
 
 ## Installation
 
-Add the following to your `composer.json` file:
+To add this package to your project, simply run the following command:
 
 ```
-"require": {
-    ...
-    "nrbusinesssystems/maximo-query": "^2.0"
-},
-"repositories": [
-    ...
-    {
-        "type" : "vcs",
-        "url" : "git@bitbucket.org:nrbusinesssystems/maximo-query.git"
-    }
-]
+composer require network-rail-business-systems/maximo-query
 ```
 
 #### Configuration
@@ -27,7 +17,7 @@ Add the following to your `composer.json` file:
 Publish the config file and configure the `maximo_url`, `maximo_username` and `maximo_password` parameters.
 
 ```bash
-php artisan vendor:publish --provider="Nrbusinesssystems\MaximoQuery\Providers\MaximoQueryServiceProvider" --tag="config"
+php artisan vendor:publish --provider="NetworkRailBusinessSystems\MaximoQuery\Providers\MaximoQueryServiceProvider" --tag="config"
 ```
 
 ## Usage

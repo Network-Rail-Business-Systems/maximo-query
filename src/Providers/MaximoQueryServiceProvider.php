@@ -1,9 +1,9 @@
 <?php
 
-namespace Nrbusinesssystems\MaximoQuery\Providers;
+namespace NetworkRailBusinessSystems\MaximoQuery\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Nrbusinesssystems\MaximoQuery\MaximoQuery;
+use NetworkRailBusinessSystems\MaximoQuery\MaximoQuery;
 
 class MaximoQueryServiceProvider extends ServiceProvider
 {

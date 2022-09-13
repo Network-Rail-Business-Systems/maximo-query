@@ -1,10 +1,10 @@
 <?php
 
-namespace Nrbusinesssystems\MaximoQuery;
+namespace NetworkRailBusinessSystems\MaximoQuery;
 
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Collection;
-use Nrbusinesssystems\MaximoQuery\Exceptions\KeyNotFound;
+use NetworkRailBusinessSystems\MaximoQuery\Exceptions\KeyNotFound;
 
 class MaximoResponse
 {
