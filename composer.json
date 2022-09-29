@@ -1,5 +1,5 @@
 {
-    "name": "network-rail-business-systems/maximo-query",
+    "name": "networkrailbusinesssystems/maximo-query",
     "description": "A Laravel package to easily retrieve data from Maximo using the REST API",
     "keywords": [
         "network rail",

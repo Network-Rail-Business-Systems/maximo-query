@@ -9,7 +9,7 @@ This package enables you to retrieve and update data from Maximo using a custom 
 To add this package to your project, simply run the following command:
 
 ```
-composer require network-rail-business-systems/maximo-query
+composer require networkrailbusinesssystems/maximo-query
 ```
 
 #### Configuration
