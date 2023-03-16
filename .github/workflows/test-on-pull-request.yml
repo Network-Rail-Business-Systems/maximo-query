@@ -7,5 +7,6 @@ jobs:
         uses: network-rail-business-systems/workflows/.github/workflows/unit-tests.yml@main
         with:
             artisan: false
+            env: false
             npm: false
             php: '8.0'
