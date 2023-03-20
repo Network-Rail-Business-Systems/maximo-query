@@ -41,9 +41,6 @@
     },
     "config": {
         "sort-packages": true,
-        "platform": {
-            "php": "8.0.6"
-        },
         "allow-plugins": {
             "pestphp/pest-plugin": true
         }
@@ -59,12 +56,9 @@
         }
     },
     "require-dev": {
-        "nunomaduro/collision": "^6.1",
-        "orchestra/testbench": "^7.3",
-        "pestphp/pest": "^1.0",
-        "pestphp/pest-plugin-mock": "^1.0",
-        "phpunit/phpunit": "^9.5",
-        "rector/rector": "^0.12"
+        "nunomaduro/collision": "^6",
+        "orchestra/testbench": "^7",
+        "phpunit/phpunit": "^9"
     },
     "minimum-stability": "dev",
     "prefer-stable": true

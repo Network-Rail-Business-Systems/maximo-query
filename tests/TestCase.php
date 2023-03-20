@@ -5,11 +5,10 @@ namespace NetworkRailBusinessSystems\MaximoQuery\Tests;
 use GuzzleHttp\Cookie\CookieJar;
 use Illuminate\Support\Facades\Cache;
 use NetworkRailBusinessSystems\MaximoQuery\Providers\MaximoQueryServiceProvider;
-use Orchestra\Testbench\TestCase as Orchestra;
+use Orchestra\Testbench\TestCase as BaseTestCase;
 
-class TestCase extends Orchestra
+class TestCase extends BaseTestCase
 {
-
     protected function getPackageProviders($app)
     {
         return [MaximoQueryServiceProvider::class];
@@ -29,4 +28,8 @@ class TestCase extends Orchestra
         );
     }
 
+    protected function getTestFilePath(string $file): string
+    {
+        return __DIR__.'/Data/'.$file;
+    }
 }
