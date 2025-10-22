@@ -3,6 +3,7 @@
 namespace NetworkRailBusinessSystems\MaximoQuery\Tests\Unit\MaximoHttp;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use NetworkRailBusinessSystems\MaximoQuery\Facades\MaximoQuery;
 use NetworkRailBusinessSystems\MaximoQuery\Tests\TestCase;
 
@@ -25,7 +26,6 @@ class SetPropertiesTest extends TestCase
             ]);
     
         Http::assertSent(function ($request) {
-            ray($request->headers());
             return $request->hasHeader('properties', ['_rowstamp,href']);
         });
     }
