@@ -3,7 +3,6 @@
 namespace NetworkRailBusinessSystems\MaximoQuery\Tests\Unit\MaximoHttp;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use NetworkRailBusinessSystems\MaximoQuery\Facades\MaximoQuery;
 use NetworkRailBusinessSystems\MaximoQuery\Tests\TestCase;
 
