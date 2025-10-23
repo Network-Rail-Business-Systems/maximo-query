@@ -25,7 +25,6 @@ class SetPropertiesTest extends TestCase
             ]);
     
         Http::assertSent(function ($request) {
-            ray($request->headers());
             return $request->hasHeader('properties', ['_rowstamp,href']);
         });
     }
