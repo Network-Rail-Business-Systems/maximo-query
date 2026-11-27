@@ -38,7 +38,7 @@ class MaximoHttp
 
         $this->password = config('maximo-query.maximo_password');
 
-        $this->cacheLifetime = config('maximo-query.cache_ttl_minutes', 60);
+        $this->cacheLifetime = config('maximo-query.cache_ttl_minutes', 30);
     }
 
 
