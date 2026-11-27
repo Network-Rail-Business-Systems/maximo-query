@@ -11,5 +11,5 @@ return [
 
     'maximo_password' => env('MAXIMO_PASSWORD', 'password'),
 
-    'cache_ttl_minutes' => env('MAXIMO_TTL', 60)
+    'cache_ttl_minutes' => env('MAXIMO_TTL', 30)
 ];
